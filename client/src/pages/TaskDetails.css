@@ -1,0 +1,136 @@
+/* .task-details-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+  }
+  
+  p {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .bids-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .bid-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #218838;
+  }
+   */
+   .task-details-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  h3 {
+    color: #444;
+    margin-top: 30px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+  }
+  
+  p {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.6;
+  }
+  
+  .bids-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .bid-item {
+    background: #f9f9f9;
+    border-left: 5px solid #007bff;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.3s ease;
+  }
+  
+  .bid-item:hover {
+    background: #f1f1f1;
+    border-left: 5px solid #0056b3;
+  }
+  
+  .bid-item div {
+    flex-grow: 1;
+  }
+  
+  .bid-item p {
+    margin: 5px 0;
+    font-size: 14px;
+  }
+  
+  button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+  
+  button:hover {
+    background: #0056b3;
+  }
+  
+  @media (max-width: 600px) {
+    .task-details-container {
+      width: 90%;
+      padding: 15px;
+    }
+  
+    .bid-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    button {
+      width: 100%;
+      margin-top: 10px;
+    }
+  }
+  .assigned-btn {
+    background: #28a745 !important; /* Green color for assigned */
+    cursor: not-allowed;
+    font-weight: bold;
+  }
+    

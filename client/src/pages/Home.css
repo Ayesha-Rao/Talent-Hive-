@@ -1,0 +1,88 @@
+/* Full-page layout */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: white;
+  padding: 20px;
+}
+
+/* Title styling */
+.home-container h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Subtitle styling */
+.home-container p {
+  font-size: 1.3rem;
+  opacity: 0.9;
+  margin-bottom: 30px;
+}
+
+/* Buttons container */
+.buttons {
+  display: flex;
+  gap: 20px;
+}
+
+/* Common button styling */
+.buttons button {
+  padding: 12px 25px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Login Button */
+.buttons button:nth-child(1) {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+}
+
+.buttons button:nth-child(1):hover {
+  background: white;
+  color: #1e3c72;
+}
+
+/* Sign Up Button */
+.buttons button:nth-child(2) {
+  background: white;
+  color: #1e3c72;
+  border: 2px solid white;
+}
+
+.buttons button:nth-child(2):hover {
+  background: transparent;
+  color: white;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .home-container h1 {
+    font-size: 2.2rem;
+  }
+  .home-container p {
+    font-size: 1.1rem;
+  }
+  .buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .buttons button {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+}
