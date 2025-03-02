@@ -297,23 +297,56 @@ const releasePayment = async (req, res) => {
         }
 
         // ✅ Independent Freelancer Payment
-        if (payment.freelancerId) {
-            console.log("✅ Releasing payment to Independent Freelancer");
+        // if (payment.freelancerId) {
+        //     console.log("✅ Releasing payment to Independent Freelancer");
 
+        //     payment.freelancersPaid = [{
+        //         freelancerId: payment.freelancerId.toString(), // Ensure it's stored as a string
+        //         amount: payment.amount,
+        //         status: "paid"
+        //     }];
+
+        //     payment.status = "paid";
+        //     await payment.save();
+
+        //     return res.status(200).json({
+        //         message: "Payment released successfully",
+        //         freelancersPaid: payment.freelancersPaid
+        //     });
+        // }
+        // ✅ Independent Freelancer Payment (Direct Payment)
+        if (payment.freelancerId) {
+            console.log("✅ Releasing payment to Independent Freelancer:", payment.freelancerId);
+
+            // Ensure `freelancersPaid` array gets updated correctly
             payment.freelancersPaid = [{
                 freelancerId: payment.freelancerId.toString(), // Ensure it's stored as a string
-                amount: payment.amount,
+                amount: payment.amount, // Full payment to freelancer
                 status: "paid"
             }];
 
             payment.status = "paid";
             await payment.save();
+            
+            // Double-check the database update
+            await Payment.updateOne(
+                { _id: payment._id },
+                { 
+                    $set: { 
+                        freelancersPaid: payment.freelancersPaid, 
+                        status: "paid" 
+                    } 
+                }
+            );
+
+            console.log("✅ Final freelancersPaid array:", payment.freelancersPaid);
 
             return res.status(200).json({
                 message: "Payment released successfully",
                 freelancersPaid: payment.freelancersPaid
             });
         }
+
 
         // ✅ If it's an Agency Task, proceed with normal payment distribution
         const subtasks = await Subtask.find({ taskId: payment.taskId, status: "completed" });
