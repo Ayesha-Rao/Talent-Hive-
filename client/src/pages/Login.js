@@ -14,10 +14,13 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", formData);
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        formData
+      );
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("role", response.data.role);
-      
+
       // Redirect based on role
       switch (response.data.role) {
         case "client":
@@ -27,7 +30,7 @@ const Login = () => {
           navigate("/freelancer/dashboard");
           break;
         case "agencyOwner":
-          navigate("/agency-owner/dashboard");
+          navigate("/agency/dashboard");
           break;
         case "agencyFreelancer":
           navigate("/agency-freelancer/dashboard");
@@ -40,41 +43,44 @@ const Login = () => {
     }
   };
 
-  return(
+  return (
     <div className="login-container">
       <div className="login-box">
         <h2 className="login-title">Login</h2>
         <form onSubmit={handleSubmit} className="login-form">
-          <input 
-            type="email" 
-            name="email" 
-            placeholder="Email" 
-            onChange={handleChange} 
-            required 
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            onChange={handleChange}
+            required
             className="login-input"
           />
-          <input 
-            type="password" 
-            name="password" 
-            placeholder="Password" 
-            onChange={handleChange} 
-            required 
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            onChange={handleChange}
+            required
             className="login-input"
           />
-          <button type="submit" className="login-button">Login</button>
+          <button type="submit" className="login-button">
+            Login
+          </button>
         </form>
       </div>
-    </div> );
-//    (
-//     <div>
-//       <h2>Login</h2>
-//       <form onSubmit={handleSubmit}>
-//         <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-//         <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
-//         <button type="submit">Login</button>
-//       </form>
-//     </div>
-//   );
+    </div>
+  );
+  //    (
+  //     <div>
+  //       <h2>Login</h2>
+  //       <form onSubmit={handleSubmit}>
+  //         <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
+  //         <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
+  //         <button type="submit">Login</button>
+  //       </form>
+  //     </div>
+  //   );
 };
 
 export default Login;

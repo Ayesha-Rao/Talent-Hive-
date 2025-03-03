@@ -1,0 +1,43 @@
+.task-assignment-container {
+    padding: 20px;
+  }
+  
+  .task-details {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  
+  .subtask-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+  }
+  
+  .subtask-form input, .subtask-form button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .subtask-form button {
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .subtask-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .subtask-item {
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
