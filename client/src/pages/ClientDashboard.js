@@ -45,7 +45,6 @@
 //         <button className="post-task-btn" onClick={() => navigate("/post-task")}>
 //           Post a New Task
 //         </button>
-       
 
 //         <h3>My Tasks</h3>
 //         <ul className="task-list">
@@ -186,7 +185,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts"; // Import recharts
-import "./style.css"; // Import the updated styles
+import "./ClientDashboard.css"; // Import the updated styles
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28"]; // Colors for pie chart
 
@@ -199,14 +198,21 @@ const ClientDashboard = () => {
     const fetchClientTasks = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/tasks/my-tasks", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          "http://localhost:5000/api/tasks/my-tasks",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         setTasks(response.data);
         const total = response.data.length;
-        const completed = response.data.filter(task => task.status === "completed").length;
-        const open = response.data.filter(task => task.status === "open").length;
+        const completed = response.data.filter(
+          (task) => task.status === "completed"
+        ).length;
+        const open = response.data.filter(
+          (task) => task.status === "open"
+        ).length;
         setStats({ total, completed, open });
       } catch (error) {
         console.error("❌ Error fetching client tasks:", error);
@@ -231,7 +237,7 @@ const ClientDashboard = () => {
         {/* Chart & Stats Section */}
         <div className="dashboard-stats">
           <div className="chart-container">
-            <PieChart width={250} height={250}>
+            <PieChart width={400} height={400}>
               <Pie
                 data={chartData}
                 cx="50%"
@@ -242,7 +248,10 @@ const ClientDashboard = () => {
                 dataKey="value"
               >
                 {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
                 ))}
               </Pie>
               <Tooltip />
@@ -258,7 +267,10 @@ const ClientDashboard = () => {
         </div>
 
         {/* Post a Task Button */}
-        <button className="post-task-btn" onClick={() => navigate("/post-task")}>
+        <button
+          className="post-task-btn"
+          onClick={() => navigate("/post-task")}
+        >
           Post a New Task
         </button>
 
@@ -266,14 +278,27 @@ const ClientDashboard = () => {
         <h3>My Tasks</h3>
         <div className="task-list">
           {tasks.length > 0 ? (
-            tasks.map(task => (
+            tasks.map((task) => (
               <div key={task._id} className="task-card">
                 <h4>{task.title}</h4>
-                <p>Status: <span className={`status ${task.status.toLowerCase()}`}>{task.status}</span></p>
-                <button className="view-btn" onClick={() => navigate(`/client/task/${task._id}`)}>View Details</button>
+                <p>
+                  Status:{" "}
+                  <span className={`status ${task.status.toLowerCase()}`}>
+                    {task.status}
+                  </span>
+                </p>
+                <button
+                  className="view-btn"
+                  onClick={() => navigate(`/client/task/${task._id}`)}
+                >
+                  View Details
+                </button>
 
                 {task.status.toLowerCase() === "completed" && (
-                  <button className="review-btn" onClick={() => navigate(`/client/task/${task._id}/review`)}>
+                  <button
+                    className="review-btn"
+                    onClick={() => navigate(`/client/task/${task._id}/review`)}
+                  >
                     Review & Approve
                   </button>
                 )}
