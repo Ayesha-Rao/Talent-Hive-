@@ -74,7 +74,7 @@ const AgencyDashboard = () => {
             <Link to="/agency/task-assignment">Task Assignment</Link>
           </li>
           <li>
-            <Link to="/agency/payments">Payments</Link>
+            <Link to="/agency/manage-payments">Manage Payments</Link>
           </li>
         </ul>
       </div>

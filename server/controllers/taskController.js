@@ -26,6 +26,13 @@ const createTask = async (req, res) => {
 
     const savedTask = await task.save();
     console.log("✅ Task Saved Successfully:", savedTask);
+    // // Notify all freelancers
+    // const freelancers = await User.find({
+    //   role: { $in: ["independentFreelancer", "agencyOwner"] },
+    // });
+    // freelancers.forEach((freelancer) => {
+    //   createNotification(freelancer._id, `New Task Posted: ${title}`, "task");
+    // });
 
     res.status(201).json({
       message: "Task Created Successfully",
@@ -95,6 +102,11 @@ const assignTask = async (req, res) => {
         .status(200)
         .json({ message: "Task assigned successfully by Client", task });
     }
+    createNotification(
+      freelancerId,
+      `You have been assigned a new task: ${task.title}`,
+      "task-assigned"
+    );
 
     // If the user is an Agency Owner, they can only assign Subtasks (handled separately)
     console.log("❌ Agency Owner should use the subtask assignment route.");
@@ -115,12 +127,16 @@ const completeTask = async (req, res) => {
     const task = await Task.findById(taskId);
     if (!task) return res.status(404).json({ message: "Task not found" });
 
+    createNotification(
+      task.clientId,
+      `Your task "${task.title}" has been completed`,
+      "task-completed"
+    );
+
     if (task.assignedTo.toString() !== req.user.id) {
-      return res
-        .status(403)
-        .json({
-          message: "Only assigned freelancer can mark task as complete.",
-        });
+      return res.status(403).json({
+        message: "Only assigned freelancer can mark task as complete.",
+      });
     }
 
     task.status = "completed";

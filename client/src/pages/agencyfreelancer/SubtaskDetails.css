@@ -1,0 +1,41 @@
+.subtask-details-container {
+    padding: 20px;
+  }
+  
+  .subtask-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .status {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px;
+  }
+  
+  .status.assigned {
+    background: #ffc107;
+    color: black;
+  }
+  
+  .status.completed {
+    background: #28a745;
+    color: white;
+  }
+  
+  .complete-btn {
+    background: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .complete-btn:hover {
+    background: #218838;
+  }
+  

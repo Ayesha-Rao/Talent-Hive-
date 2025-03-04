@@ -1,0 +1,59 @@
+.dashboard-container {
+    padding: 20px;
+  }
+  
+  .stats-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .stats {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .stat-card {
+    background: #032a52;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+  }
+  
+  .task-list {
+    margin-top: 20px;
+  }
+  
+  .task-card {
+    background: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .complete-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .complete-btn:hover {
+    background-color: #218838;
+  }
+  
+  .status.assigned {
+    color: orange;
+  }
+  
+  .status.completed {
+    color: green;
+  }
+  
+  .status.in-progress {
+    color: blue;
+  }
+  

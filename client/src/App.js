@@ -16,7 +16,10 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import ManageAgency from "./pages/agency/ManageAgency";
 import AgencyTaskBidding from "./pages/agency/AgencyTaskBidding";
 import AgencyTaskDetails from "./pages/agency/AgencyTaskDetails";
+import AgencyFreelancerDashboard from "./pages/agencyfreelancer/AgencyFreelancerDashboard";
 import TaskAssignment from "./pages/agency/TaskAssignment";
+import SubtaskDetails from "./pages/agencyfreelancer/SubTaskDetails";
+import AgencyOwnerPayments from "./pages/agency/AgencyOwnerPayment";
 
 function App() {
   return (
@@ -32,7 +35,6 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/client/dashboard" element={<ClientDashboard />} />
           <Route path="/post-task" element={<PostTask />} />
-
           <Route path="/client/task/:taskId" element={<TaskDetails />} />
           <Route
             path="/client/review-payment/:taskId"
@@ -63,6 +65,19 @@ function App() {
             path="/agency/task-assignment/:taskId"
             element={<TaskAssignment />}
           />
+          <Route
+            path="/agency-freelancer/dashboard"
+            element={<AgencyFreelancerDashboard />}
+          />
+          <Route
+            path="/agency-freelancer/subtask/:subtaskId"
+            element={<SubtaskDetails />}
+          />
+          <Route
+            path="/agency/manage-payments"
+            element={<AgencyOwnerPayments />}
+          />
+          ;
         </Route>
       </Routes>
     </Router>
