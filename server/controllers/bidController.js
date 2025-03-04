@@ -1,5 +1,6 @@
 const Bid = require("../models/Bid");
 const Task = require("../models/Task");
+const { createNotification } = require("../controllers/notificationController");
 
 // ✅ Freelancers & Agencies Place a Bid
 const placeBid = async (req, res) => {
@@ -30,6 +31,12 @@ const placeBid = async (req, res) => {
 
     await bid.save();
     console.log("✅ Bid Placed Successfully:", bid);
+    //notify the client
+    await createNotification(
+      taskOwnerId,
+      `New bid placed on your task "${taskTitle}".`,
+      "bid"
+    );
 
     res.status(201).json({ message: "Bid placed successfully", bid });
   } catch (error) {

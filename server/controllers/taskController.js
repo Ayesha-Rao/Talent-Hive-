@@ -1,4 +1,6 @@
 const Task = require("../models/Task");
+const { createNotification } = require("../controllers/notificationController");
+const User = require("../models/User"); // ✅ Add this line if missing
 
 // ✅ Create a new task (Client only)
 const createTask = async (req, res) => {
@@ -26,13 +28,21 @@ const createTask = async (req, res) => {
 
     const savedTask = await task.save();
     console.log("✅ Task Saved Successfully:", savedTask);
-    // // Notify all freelancers
-    // const freelancers = await User.find({
-    //   role: { $in: ["independentFreelancer", "agencyOwner"] },
-    // });
-    // freelancers.forEach((freelancer) => {
-    //   createNotification(freelancer._id, `New Task Posted: ${title}`, "task");
-    // });
+
+    // Notify all freelancers
+    const freelancers = await User.find({
+      role: { $in: ["independentFreelancer", "agencyOwner"] },
+    });
+    freelancers.forEach((freelancer) => {
+      createNotification(freelancer._id, `New Task Posted: ${title}`, "task");
+    });
+    // ✅ Debugging Notification Creation
+    // console.log("🔹 Creating Notification for Task Creation...");
+    // await createNotification(
+    //   req.user.id,
+    //   `Your task "${title}" has been posted.`,
+    //   "task"
+    // );
 
     res.status(201).json({
       message: "Task Created Successfully",

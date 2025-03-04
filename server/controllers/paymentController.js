@@ -1,5 +1,6 @@
 const Payment = require("../models/Payment");
 const Task = require("../models/Task");
+const { createNotification } = require("../controllers/notificationController");
 
 // ✅ Client Approves Task Completion & Initiates Payment
 const processPayment = async (req, res) => {
@@ -113,11 +114,11 @@ const approvePayment = async (req, res) => {
 
     const task = await Task.findById(taskId);
     if (!task) return res.status(404).json({ message: "❌ Task not found." });
-    // createNotification(
-    //   task.assignedTo,
-    //   `Payment for "${task.title}" has been approved`,
-    //   "task-approved"
-    // );
+    createNotification(
+      task.assignedTo,
+      `Payment for "${task.title}" has been approved`,
+      "task-approved"
+    );
 
     if (task.status !== "completed") {
       return res.status(400).json({
