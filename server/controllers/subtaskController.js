@@ -1,5 +1,8 @@
 const Subtask = require("../models/Subtask");
 const Task = require("../models/Task");
+const { createNotification } = require("../controllers/notificationController");
+const User = require("../models/User"); // ✅ Add this line if missing
+
 
 // ✅ Create a Subtask (Agency Owner Only)
 const createSubtask = async (req, res) => {
@@ -64,6 +67,21 @@ const completeSubtask = async (req, res) => {
         if (remainingSubtasks.length === 0) {
             await Task.findByIdAndUpdate(subtask.taskId, { status: "completed" });
         }
+        // ✅ Notify Agency Owner about Subtask Completion
+        // console.log("🔔 Creating Notification for Agency Owner...");
+        // await createNotification(agencyOwnerId, `Subtask "${subtask.description}" has been completed.`, "task");
+         // ✅ Find the Agency Owner from the Task
+         const task = await Task.findById(subtask.taskId);
+         if (!task) {
+             console.log("❌ Task not found, skipping notification.");
+         } else {
+             const agencyOwnerId = task.assignedTo; // Agency Owner ID
+ 
+             console.log(`🔔 Creating Notification for Agency Owner: ${agencyOwnerId}`);
+             await createNotification(agencyOwnerId, `Subtask "${subtask.description}" has been completed.`, "task");
+             console.log("✅ Notification Sent to Agency Owner!");
+         }
+
 
         res.status(200).json({ message: "Subtask marked as completed", subtask });
     } catch (error) {
@@ -94,6 +112,22 @@ const assignSubtask = async (req, res) => {
         await subtask.save();
 
         console.log("✅ Subtask Assigned Successfully:", subtask);
+
+        //  // ✅ Create Notification for Agency Freelancer
+        //  console.log("🔔 Creating Notification for Subtask Assignment...");
+        //  await createNotification(freelancerId, `You have been assigned a new subtask: ${subtask.description}`, "task");
+        // ✅ Ensure that the freelancer exists before sending a notification
+        const freelancer = await User.findById(freelancerId);
+        if (!freelancer) {
+            console.log("❌ Freelancer not found, skipping notification.");
+        } else {
+            console.log(`🔔 Creating Notification for Freelancer: ${freelancerId}`);
+            await createNotification(freelancerId, `You have been assigned a new subtask: ${subtask.description}`, "task");
+            console.log("✅ Notification Created for Freelancer!");
+        }
+
+         
+
         res.status(200).json({ message: "Subtask assigned successfully", subtask });
 
     } catch (error) {

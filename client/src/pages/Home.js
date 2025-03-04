@@ -9,7 +9,8 @@ const Home = () => {
     // Add the Navbar component to the Home page
     
     <div>
-    <Navbar /> {/* Add the Navbar here */}
+    {/* <Navbar /> */}
+     {/* Add the Navbar here */}
     <div className="home-container">
       <h1>Welcome to Talent Hive</h1>
       <p>Your ultimate freelance management platform</p>

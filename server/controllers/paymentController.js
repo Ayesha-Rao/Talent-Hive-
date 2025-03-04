@@ -114,11 +114,7 @@ const approvePayment = async (req, res) => {
 
     const task = await Task.findById(taskId);
     if (!task) return res.status(404).json({ message: "❌ Task not found." });
-    createNotification(
-      task.assignedTo,
-      `Payment for "${task.title}" has been approved`,
-      "task-approved"
-    );
+    
 
     if (task.status !== "completed") {
       return res.status(400).json({
@@ -140,6 +136,12 @@ const approvePayment = async (req, res) => {
       // ✅ If payment exists, update status to approved
       payment.status = "approved";
       await payment.save();
+    }
+      // ✅ Notify the freelancer or agency that payment is approved
+      if (payment.freelancerId) {
+        await createNotification(payment.freelancerId, `Payment approved for your completed task`, "payment");
+    } else if (payment.agencyOwnerId) {
+        await createNotification(payment.agencyOwnerId, `Payment approved for your agency's task`, "payment");
     }
 
     console.log("✅ Payment Approved:", payment);

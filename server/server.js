@@ -24,6 +24,7 @@ app.use("/api/subtasks", require("./routes/subtaskRoutes"));
 app.use("/api/users", userRoutes); // ✅ Register user routes (for adding freelancers)
 app.use("/api/bids", require("./routes/bidRoutes"));
 app.use("/api/payments", require("./routes/paymentRoutes"));
+app.use("/api/reviews", require("./routes/reviewRoutes"));
 
 app.use("/api/notifications", notificationRoutes);
 const PORT = process.env.PORT || 5000;

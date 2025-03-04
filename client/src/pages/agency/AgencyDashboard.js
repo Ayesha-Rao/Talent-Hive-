@@ -58,6 +58,9 @@ const AgencyDashboard = () => {
   return (
     <div>
       <Navbar />
+      <Link to={`/profile/${localStorage.getItem("userId")}`} className="profile-link">
+  View Profile
+</Link>
       <div className="sidebar">
         <ul>
           <li>

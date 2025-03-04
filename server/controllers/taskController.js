@@ -29,20 +29,11 @@ const createTask = async (req, res) => {
     const savedTask = await task.save();
     console.log("✅ Task Saved Successfully:", savedTask);
 
-    // Notify all freelancers
-    const freelancers = await User.find({
-      role: { $in: ["independentFreelancer", "agencyOwner"] },
-    });
-    freelancers.forEach((freelancer) => {
-      createNotification(freelancer._id, `New Task Posted: ${title}`, "task");
-    });
-    // ✅ Debugging Notification Creation
-    // console.log("🔹 Creating Notification for Task Creation...");
-    // await createNotification(
-    //   req.user.id,
-    //   `Your task "${title}" has been posted.`,
-    //   "task"
-    // );
+    // ✅ Notify Freelancers & Agencies
+    const freelancers = await User.find({ role: { $in: ["independentFreelancer", "agencyOwner"] } });
+    for (const freelancer of freelancers) {
+      await createNotification(freelancer._id, `New task posted: ${title}`, "task");
+  }
 
     res.status(201).json({
       message: "Task Created Successfully",
@@ -108,15 +99,23 @@ const assignTask = async (req, res) => {
       task.status = "assigned";
       await task.save();
       console.log("✅ Task Assigned by Client:", task);
+
+      
+      // ✅ Fix: Use `freelancerId` instead of `assignedTo`
+      console.log("🔔 Creating Notification for Task Assignment...");
+      await createNotification(freelancerId, `You have been assigned to task: ${task.title}`, "task");
+
+   
+
       return res
         .status(200)
         .json({ message: "Task assigned successfully by Client", task });
+        
     }
-    createNotification(
-      freelancerId,
-      `You have been assigned a new task: ${task.title}`,
-      "task-assigned"
-    );
+
+    
+       
+
 
     // If the user is an Agency Owner, they can only assign Subtasks (handled separately)
     console.log("❌ Agency Owner should use the subtask assignment route.");
@@ -151,6 +150,13 @@ const completeTask = async (req, res) => {
 
     task.status = "completed";
     await task.save();
+
+        // ✅ Notify the Client
+        await createNotification(
+          task.clientId, // Client ID (Recipient)
+          `Your task "${task.title}" has been completed by the freelancer.`,
+          "task"
+      );
 
     res.status(200).json({ message: "Task marked as completed", task });
   } catch (error) {

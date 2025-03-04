@@ -42,9 +42,18 @@
 const Notification = require("../models/Notification");
 
 // ✅ Create a New Notification (Called from Task, Bid, or Payment Controllers)
-const createNotification = async (userId, message, type) => {
+// const createNotification = async (userId, message, type) => {
+//   try {
+//     const notification = new Notification({ userId, message, type });
+//     await notification.save();
+//     console.log("✅ Notification Created:", notification);
+//   } catch (error) {
+//     console.error("❌ Error Creating Notification:", error);
+//   }
+// };
+const createNotification = async (recipientId, message, type) => {
   try {
-    const notification = new Notification({ userId, message, type });
+    const notification = new Notification({ recipientId, message, type }); // ✅ Use recipientId
     await notification.save();
     console.log("✅ Notification Created:", notification);
   } catch (error) {
@@ -52,28 +61,50 @@ const createNotification = async (userId, message, type) => {
   }
 };
 
+
 // ✅ Get Notifications for Logged-in User
 const getUserNotifications = async (req, res) => {
   try {
-    const notifications = await Notification.find({ userId: req.user.id }).sort(
-      { createdAt: -1 }
-    );
-    res.status(200).json(notifications);
+      console.log("🔍 Fetching Notifications for User:", req.user.id);
+
+      const notifications = await Notification.find({ recipientId: req.user.id }) // ✅ Use recipientId
+          .sort({ createdAt: -1 });
+
+      res.status(200).json(notifications);
   } catch (error) {
-    console.error("❌ Error Fetching Notifications:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+      console.error("❌ Error Fetching Notifications:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
+
 // ✅ Mark a Notification as Read
-const markNotificationAsRead = async (req, res) => {
+// const markNotificationAsRead = async (req, res) => {
+//   try {
+//     const { notificationId } = req.params;
+//     await Notification.findByIdAndUpdate(notificationId, { isRead: true });
+//     res.status(200).json({ message: "Notification marked as read" });
+//   } catch (error) {
+//     console.error("❌ Error Marking Notification as Read:", error);
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
+const markAllAsRead = async (req, res) => {
   try {
-    const { notificationId } = req.params;
-    await Notification.findByIdAndUpdate(notificationId, { isRead: true });
-    res.status(200).json({ message: "Notification marked as read" });
+      console.log("🔍 Marking all notifications as read...");
+      console.log("🔹 Logged-in User:", req.user);
+
+      const updatedNotifications = await Notification.updateMany(
+          { userId: req.user.id, isRead: false },
+          { $set: { isRead: true } }
+      );
+
+      console.log("✅ Notifications Marked as Read:", updatedNotifications);
+
+      res.status(200).json({ message: "All notifications marked as read." });
   } catch (error) {
-    console.error("❌ Error Marking Notification as Read:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+      console.error("❌ Error Marking All Notifications as Read:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -92,6 +123,6 @@ const deleteNotification = async (req, res) => {
 module.exports = {
   createNotification,
   getUserNotifications,
-  markNotificationAsRead,
+  markAllAsRead,
   deleteNotification,
 };

@@ -32,13 +32,16 @@ const placeBid = async (req, res) => {
     await bid.save();
     console.log("✅ Bid Placed Successfully:", bid);
     //notify the client
-    await createNotification(
-      taskOwnerId,
-      `New bid placed on your task "${taskTitle}".`,
-      "bid"
-    );
+    // await createNotification(
+    //   taskOwnerId,
+    //   `New bid placed on your task "${taskTitle}".`,
+    //   "bid"
+    // );
 
     res.status(201).json({ message: "Bid placed successfully", bid });
+
+    await createNotification(task.clientId, `New bid placed on your task`, "bid");
+    
   } catch (error) {
     console.error("❌ Error Placing Bid:", error);
     res.status(500).json({ message: "Server error", error: error.message });

@@ -20,6 +20,8 @@ import AgencyFreelancerDashboard from "./pages/agencyfreelancer/AgencyFreelancer
 import TaskAssignment from "./pages/agency/TaskAssignment";
 import SubtaskDetails from "./pages/agencyfreelancer/SubTaskDetails";
 import AgencyOwnerPayments from "./pages/agency/AgencyOwnerPayment";
+import NotificationsPage from "./pages/NotificationsPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -77,6 +79,8 @@ function App() {
             path="/agency/manage-payments"
             element={<AgencyOwnerPayments />}
           />
+           <Route path="/notifications" element={<NotificationsPage />} />
+           <Route path="/profile/:userId" element={<ProfilePage />} />
           ;
         </Route>
       </Routes>
