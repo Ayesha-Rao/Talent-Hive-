@@ -44,7 +44,15 @@ const submitReview = async (req, res) => {
       if (task.clientId.toString() === recipientId) {
         validReview = true;
       }
-    } else if (reviewerRole === "agencyOwner") {
+    } 
+    else if (reviewerRole === "agencyOwner") {
+      // ✅ Agency Owners can review Agency Freelancers
+     
+      if (task.clientId.toString() === recipientId) {
+        validReview = true;
+      }
+    } 
+    else if (reviewerRole === "agencyOwner") {
       // ✅ Agency Owners can review Agency Freelancers
       if (subtask && subtask.assignedTo.toString() === recipientId) {
         validReview = true;

@@ -263,7 +263,7 @@ const getCompletedTasks = async (req, res) => {
     } 
     
     else if (req.user.role === "agencyOwner") {
-      filter.agencyId = req.user.id; // Agency owners see tasks they manage
+      filter.assignedTo = req.user.id; // Agency owners see tasks they manage
       
       const completedTasks = await Task.find(filter)
         .populate("clientId", "name email") // ✅ Agency owner CAN see client info
