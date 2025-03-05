@@ -12,12 +12,7 @@ const ReviewSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     }, // Who is receiving the review
-    // reviewer: {
-    //   // ✅ Make sure this exists
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "User",
-    //   required: true,
-    // },
+
     taskId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Task",

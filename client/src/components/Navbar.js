@@ -103,7 +103,8 @@ const Navbar = () => {
         ) : (
           <>
             <Link to={`/profile/${userId}`}>Profile</Link>
-            <Link to="/reviews">Reviews</Link>
+            <Link to="/submit-review">Submit Review</Link>
+            {/* <Link to="/reviews">Reviews</Link> */}
             <Link to="/notifications">
               🔔{" "}
               {unreadCount > 0 && <span className="badge">{unreadCount}</span>}

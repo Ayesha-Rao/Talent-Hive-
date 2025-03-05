@@ -73,7 +73,7 @@ router.post(
 router.post("/", protect, authorizeRoles("client"), createTask);
 
 // ✅ Agency Owners can assign tasks to freelancers
-// router.post("/assign", protect, authorizeRoles("agencyOwner"), assignTask);
+
 router.post(
   "/assign",
   protect,

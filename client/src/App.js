@@ -23,6 +23,7 @@ import AgencyOwnerPayments from "./pages/agency/AgencyOwnerPayment";
 import NotificationsPage from "./pages/NotificationsPage";
 import ReviewsPage from "./pages/ReviewsPage";
 import ProfilePage from "./pages/ProfilePage";
+import SubmitReview from "./pages/SubmitReview";
 
 function App() {
   return (
@@ -82,6 +83,7 @@ function App() {
           />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/profile/:userId" element={<ProfilePage />} />
+          <Route path="/submit-review" element={<SubmitReview />} />
           <Route path="/reviews" element={<ReviewsPage />} />{" "}
           {/* ✅ New Route */};
         </Route>
