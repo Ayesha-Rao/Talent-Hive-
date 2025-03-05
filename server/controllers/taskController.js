@@ -271,19 +271,43 @@ const getCompletedTasks = async (req, res) => {
       return res.status(200).json(completedTasks);
     } 
     
+    // else if (req.user.role === "agencyFreelancer") {
+    //   // Fetch completed subtasks assigned to this agency freelancer
+    //   const completedSubtasks = await Subtask.find({
+    //     assignedTo: req.user.id,
+    //     status: "completed",
+    //   }).populate({
+    //     path: "taskId",
+    //     select: "title description agencyId", // ✅ Include `agencyId`
+    //     populate: { path: "agencyId", select: "_id" } // ✅ Ensure agencyId is populated
+    // });
+    //   // .populate("taskId", "title description"); // ❌ Removed clientId population
+
+    //   if (completedSubtasks.length === 0) {
+    //     return res.status(200).json([]); // Return empty array if no completed subtasks
+    //   }
+
+    //   return res.status(200).json(completedSubtasks);
+    // }
     else if (req.user.role === "agencyFreelancer") {
       // Fetch completed subtasks assigned to this agency freelancer
       const completedSubtasks = await Subtask.find({
-        assignedTo: req.user.id,
-        status: "completed",
-      }).populate("taskId", "title description"); // ❌ Removed clientId population
-
-      if (completedSubtasks.length === 0) {
-        return res.status(200).json([]); // Return empty array if no completed subtasks
+          assignedTo: req.user.id,
+          status: "completed",
+      }).populate({
+          path: "taskId",
+          select: "title description",
+      }).populate({
+          path: "assignedTo",
+          select: "agencyId", // ✅ Fetch agencyId from User model
+      });
+  
+      if (!completedSubtasks.length) {
+          return res.status(200).json([]);
       }
-
+  
       return res.status(200).json(completedSubtasks);
-    }
+  }
 
     res.status(403).json({ message: "Unauthorized access" });
   } catch (error) {

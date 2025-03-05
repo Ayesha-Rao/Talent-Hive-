@@ -48,6 +48,7 @@ const SubmitReview = () => {
                 _id: subtask._id,
                 title: subtask.description || "Subtask", // ✅ Show subtask description
                 taskId: subtask.taskId?._id || "", // ✅ Store parent taskId for recipient logic
+                agencyId: subtask.assignedTo?.agencyId || "",
             })));
         } else {
             // ✅ Keep existing functionality for other roles
@@ -93,7 +94,7 @@ const handleTaskChange = (taskId) => {
         recipient = task.clientId?._id || ""; // Freelancer reviews client
       }
        else if (userRole === "agencyFreelancer") {
-        recipient = task.taskId?.agencyId || ""; // Agency Freelancer reviews Agency Owner
+        recipient = task.agencyId || "";// Agency Freelancer reviews Agency Owner
       } 
     
       else if (userRole === "agencyOwner") {
