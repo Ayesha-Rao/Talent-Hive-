@@ -509,48 +509,10 @@ const SubmitReview = () => {
     loadCompletedTasks();
   }, [userId, navigate]);
 
-  // ✅ When a task is selected, automatically set the recipient
-  //   const handleTaskSelection = (taskId) => {
-  //     setSelectedTask(taskId);
-
-  //     // Find the selected task
-  //     const task = completedTasks.find((t) => t._id === taskId);
-  //     console.log("🔹 Selected Task:", task); // ✅ Debugging selected task
-
-  //     if (!task) {
-  //       setRecipientId("");
-  //       setRecipientName("Unknown User");
-  //       return;
-  //     }
-
-  //     let recipient = null;
-
-  //     // ✅ Determine the recipient based on the user's role
-  //     if (userRole === "client") {
-  //       recipient = task.assignedTo; // Client reviews freelancer
-  //     } else if (
-  //       userRole === "independentFreelancer" ||
-  //       userRole === "agencyFreelancer"
-  //     ) {
-  //       recipient = task.clientId; // Freelancer reviews client
-  //     } else if (userRole === "agencyOwner") {
-  //       recipient = task.assignedTo; // Agency owner reviews agency freelancer
-  //     }
-
-  //     // ✅ Fix: Ensure recipient exists
-  //     if (recipient && recipient._id && recipient.name) {
-  //       setRecipientId(recipient._id);
-  //       setRecipientName(recipient.name);
-  //     } else {
-  //       setRecipientId("");
-  //       setRecipientName("Recipient Not Found");
-  //       console.warn("⚠️ Recipient is missing in task data. Check API response.");
-  //     }
-  //   };
   const handleTaskSelection = (taskId) => {
     setSelectedTask(taskId);
 
-    // ✅ Find the selected task from the completed tasks list
+    // ✅ Find the selected task from the API response
     const task = completedTasks.find((t) => t._id === taskId);
 
     if (!task) {
@@ -558,30 +520,47 @@ const SubmitReview = () => {
       return;
     }
 
+    console.log("🔍 Selected Task API Response:", task);
+
     let recipient = null;
 
-    // ✅ Automatically assign recipient based on user role
-    if (userRole === "client" && task.assignedTo) {
-      recipient = task.assignedTo; // Client reviews Freelancer
-    } else if (
-      (userRole === "independentFreelancer" ||
-        userRole === "agencyFreelancer") &&
-      task.clientId
-    ) {
-      recipient = task.clientId; // Freelancer reviews Client
-    } else if (userRole === "agencyOwner" && task.assignedTo) {
-      recipient = task.assignedTo; // Agency Owner reviews Freelancer
+    // ✅ Assign recipient based on user role
+    if (userRole === "client") {
+      // Client reviews the Freelancer
+      if (task.assignedTo) {
+        recipient = task.assignedTo;
+      }
+    } else if (userRole === "independentFreelancer") {
+      // Independent Freelancer reviews the Client
+      if (task.clientId) {
+        recipient = task.clientId;
+      }
+    } else if (userRole === "agencyOwner") {
+      // Agency Owner reviews Freelancer (assigned to task)
+      if (task.assignedTo) {
+        recipient = task.assignedTo;
+      }
+    } else if (userRole === "agencyFreelancer") {
+      // Agency Freelancer reviews Agency Owner
+      if (user.agencyId) {
+        recipient = {
+          _id: user.agencyId,
+          name: "Agency Owner", // You may need to fetch actual name
+        };
+      }
     }
 
-    // ✅ Debugging Output
-    console.log("🔹 Selected Task:", task);
     console.log("🔹 Auto-Assigned Recipient:", recipient);
 
-    // ✅ Set recipient ID if found
-    if (recipient) {
+    if (recipient && recipient._id) {
       setRecipientId(recipient._id);
+      setRecipientName(recipient.name);
+      console.log(
+        `✅ Recipient Assigned: ${recipient.name} (ID: ${recipient._id})`
+      );
     } else {
       setRecipientId("");
+      setRecipientName("⚠️ No recipient found");
       console.warn("⚠️ No recipient found for this task.");
     }
   };
@@ -634,9 +613,15 @@ const SubmitReview = () => {
         </select>
 
         {/* ✅ Automatically Show the Recipient */}
-        <label>Reviewing:</label>
+        {/* <label>Reviewing:</label>
         <p>
           <strong>{recipientName}</strong>
+        </p> */}
+        <label>Reviewing:</label>
+        <p>
+          <strong>
+            {recipientName ? recipientName : "⚠️ No recipient found"}
+          </strong>
         </p>
 
         {/* ✅ Rating Selection */}
