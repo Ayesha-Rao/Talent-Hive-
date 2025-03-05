@@ -21,6 +21,7 @@ import TaskAssignment from "./pages/agency/TaskAssignment";
 import SubtaskDetails from "./pages/agencyfreelancer/SubTaskDetails";
 import AgencyOwnerPayments from "./pages/agency/AgencyOwnerPayment";
 import NotificationsPage from "./pages/NotificationsPage";
+import ReviewsPage from "./pages/ReviewsPage";
 import ProfilePage from "./pages/ProfilePage";
 
 function App() {
@@ -79,9 +80,10 @@ function App() {
             path="/agency/manage-payments"
             element={<AgencyOwnerPayments />}
           />
-           <Route path="/notifications" element={<NotificationsPage />} />
-           <Route path="/profile/:userId" element={<ProfilePage />} />
-          ;
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/profile/:userId" element={<ProfilePage />} />
+          <Route path="/reviews" element={<ReviewsPage />} />{" "}
+          {/* ✅ New Route */};
         </Route>
       </Routes>
     </Router>

@@ -39,7 +39,7 @@
 
 // const ReviewPage = () => {
 //   const [reviews, setReviews] = useState([]);
-  
+
 //   // Get userId from logged-in user
 //   const user = JSON.parse(localStorage.getItem("user")); // ✅ Fetch user info
 //   const userId = user ? user._id : null;
@@ -81,14 +81,16 @@ import { getUser } from "../services/authService"; // Import user helper
 
 const ProfilePage = () => {
   const [reviews, setReviews] = useState([]);
-  
+
   // ✅ Get the logged-in user
   const user = getUser();
   const userId = user ? user._id : null;
 
   useEffect(() => {
     if (!userId) {
-      console.error("❌ User ID is undefined. Ensure user data is stored in localStorage.");
+      console.error(
+        "❌ User ID is undefined. Ensure user data is stored in localStorage."
+      );
       return;
     }
 
@@ -104,11 +106,40 @@ const ProfilePage = () => {
     getReviews();
   }, [userId]);
 
+  // return (
+  //   <div>
+  //     <h2>User Reviews</h2>
+  //     {reviews.length > 0 ? (
+  //       reviews.map((review) => <p key={review._id}>{review.comment}</p>)
+  //     ) : (
+  //       <p>No reviews found.</p>
+  //     )}
+  //   </div>
+  // );
   return (
     <div>
       <h2>User Reviews</h2>
       {reviews.length > 0 ? (
-        reviews.map((review) => <p key={review._id}>{review.comment}</p>)
+        reviews.map((review) => (
+          <div key={review._id} className="review-card">
+            <h3>{review.taskId?.title || "Unknown Task"}</h3>{" "}
+            {/* ✅ Show Task Title */}
+            <p>
+              <strong>Reviewer:</strong>{" "}
+              {review.reviewerId?.name || "Unknown User"}
+            </p>{" "}
+            {/* ✅ Show Reviewer Name */}
+            <p>
+              <strong>Rating:</strong> {review.rating} ⭐
+            </p>{" "}
+            {/* ✅ Show Rating */}
+            <p>
+              <strong>Comment:</strong> {review.comment}
+            </p>{" "}
+            {/* ✅ Show Review Comment */}
+            <hr />
+          </div>
+        ))
       ) : (
         <p>No reviews found.</p>
       )}

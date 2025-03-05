@@ -8,6 +8,7 @@ const {
   assignTask,
   completeTask,
   getTaskById,
+  getCompletedTasks,
 } = require("../controllers/taskController");
 const Task = require("../models/Task");
 const router = express.Router();
@@ -43,6 +44,18 @@ router.get(
       res.status(500).json({ message: "Server error", error: error.message });
     }
   }
+);
+// ✅ Get Completed Tasks for the Logged-in Freelancer/Agency Freelancer
+router.get(
+  "/completed",
+  protect,
+  authorizeRoles(
+    "independentFreelancer",
+    "agencyFreelancer",
+    "agencyOwner",
+    "client"
+  ),
+  getCompletedTasks
 );
 // ✅ Get Task Details by ID (Clients, Freelancers, Agency Owners)
 router.get("/:taskId", protect, getTaskById);
