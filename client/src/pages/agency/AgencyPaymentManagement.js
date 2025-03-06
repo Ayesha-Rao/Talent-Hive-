@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "../style.css";
 
 const AgencyPaymentManagement = () => {
   const [completedTasks, setCompletedTasks] = useState([]);
@@ -154,7 +155,30 @@ const AgencyPaymentManagement = () => {
                     <span key={subtask._id}>{subtask.assignedTo?.name} </span>
                   )) || "Fetching..."}
                 </td>
-                <td>${task.paymentReceived || 0}</td>
+                {/* <td>${task.paymentReceived || 0}</td> */}
+                <td>
+                  <p>
+                    <strong>Total:</strong> ${task.paymentReceived || 0}
+                  </p>
+                  <p className="commission-info">
+                    <strong>Commission (5%):</strong>
+                    <span className="commission-amount">
+                      {" "}
+                      -${(task.paymentReceived * 0.05).toFixed(2)}
+                    </span>
+                    <span className="tooltip">
+                      ⓘ
+                      <span className="tooltip-text">
+                        Agency deducts 5% commission from total payment.
+                      </span>
+                    </span>
+                  </p>
+                  <p>
+                    <strong>Final Payment:</strong> $
+                    {(task.paymentReceived * 0.95).toFixed(2)}
+                  </p>
+                </td>
+
                 <td>{task.paymentStatus}</td>
                 <td>
                   {task.paymentStatus === "Paid" ? (

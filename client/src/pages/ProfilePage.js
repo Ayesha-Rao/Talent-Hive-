@@ -1,86 +1,13 @@
-// import { useEffect, useState } from "react";
-// import { fetchReviews } from "../services/reviewService";
-// import RatingStars from "../components/RatingStars";
-
-// const ProfilePage = ({ userId }) => {
-//   const [reviews, setReviews] = useState([]);
-
-//   useEffect(() => {
-//     const loadReviews = async () => {
-//       const data = await fetchReviews(userId);
-//       setReviews(data);
-//     };
-
-//     loadReviews();
-//   }, [userId]);
-
-//   return (
-//     <div>
-//       <h2>User Profile</h2>
-//       <h3>Ratings & Reviews</h3>
-//       {reviews.length === 0 ? (
-//         <p>No reviews yet.</p>
-//       ) : (
-//         reviews.map((review) => (
-//           <div key={review._id}>
-//             <p><RatingStars rating={review.rating} /></p>
-//             <p>{review.comment}</p>
-//             <p>By: {review.reviewerId.name}</p>
-//           </div>
-//         ))
-//       )}
-//     </div>
-//   );
-// };
-
-// export default ProfilePage;
-// import { useEffect, useState } from "react";
-// import { fetchReviews } from "../services/reviewService";
-
-// const ReviewPage = () => {
-//   const [reviews, setReviews] = useState([]);
-
-//   // Get userId from logged-in user
-//   const user = JSON.parse(localStorage.getItem("user")); // ✅ Fetch user info
-//   const userId = user ? user._id : null;
-
-//   useEffect(() => {
-//     if (!userId) {
-//       console.error("❌ User ID is undefined");
-//       return;
-//     }
-
-//     const getReviews = async () => {
-//       try {
-//         const data = await fetchReviews(userId);
-//         setReviews(data);
-//       } catch (error) {
-//         console.error("❌ Error Fetching Reviews:", error);
-//       }
-//     };
-
-//     getReviews();
-//   }, [userId]);
-
-//   return (
-//     <div>
-//       <h2>User Reviews</h2>
-//       {reviews.length > 0 ? (
-//         reviews.map((review) => <p key={review._id}>{review.comment}</p>)
-//       ) : (
-//         <p>No reviews found.</p>
-//       )}
-//     </div>
-//   );
-// };
-
 // export default ReviewPage;
 import { useEffect, useState } from "react";
 import { fetchReviews } from "../services/reviewService";
 import { getUser } from "../services/authService"; // Import user helper
+import axios from "axios";
+import "./style.css";
 
 const ProfilePage = () => {
   const [reviews, setReviews] = useState([]);
+  const [userData, setUserData] = useState(null);
 
   // ✅ Get the logged-in user
   const user = getUser();
@@ -93,6 +20,19 @@ const ProfilePage = () => {
       );
       return;
     }
+    // ✅ Fetch User Details
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Ensure auth token is included
+        const response = await axios.get(
+          `http://localhost:5000/api/users/${userId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setUserData(response.data); // Store user data in state
+      } catch (error) {
+        console.error("❌ Error Fetching User Info:", error);
+      }
+    };
 
     const getReviews = async () => {
       try {
@@ -102,22 +42,30 @@ const ProfilePage = () => {
         console.error("❌ Error Fetching Reviews:", error);
       }
     };
-
+    fetchUserData();
     getReviews();
   }, [userId]);
 
-  // return (
-  //   <div>
-  //     <h2>User Reviews</h2>
-  //     {reviews.length > 0 ? (
-  //       reviews.map((review) => <p key={review._id}>{review.comment}</p>)
-  //     ) : (
-  //       <p>No reviews found.</p>
-  //     )}
-  //   </div>
-  // );
   return (
-    <div>
+    <div className="profile-container">
+      <h2>User Profile</h2>
+
+      {/* ✅ Display User Information */}
+      {userData ? (
+        <div className="user-info">
+          <p>
+            <strong>Name:</strong> {userData.name}
+          </p>
+          <p>
+            <strong>Email:</strong> {userData.email}
+          </p>
+          <p>
+            <strong>Role:</strong> {userData.role}
+          </p>
+        </div>
+      ) : (
+        <p>Loading user information...</p>
+      )}
       <h2>User Reviews</h2>
       {reviews.length > 0 ? (
         reviews.map((review) => (

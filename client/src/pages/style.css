@@ -444,3 +444,225 @@
     align-items: center;
   }
 }
+
+
+/* agencypayment */
+/* .commission-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #ff6b6b;
+  font-size: 14px;
+}
+
+.commission-amount {
+  font-weight: bold;
+}
+
+.tooltip {
+  position: relative;
+  cursor: pointer;
+  font-size: 14px;
+  color: #888;
+}
+
+.tooltip-text {
+  display: none;
+  position: absolute;
+  background: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 12px;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.tooltip:hover .tooltip-text {
+  display: block;
+} */
+/* ✅ Payment Management Page Styling */
+.payment-management-container {
+  max-width: 90%;
+  margin: 30px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.payment-management-container h2 {
+  text-align: center;
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* ✅ Table Styling */
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.task-table th, .task-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.task-table th {
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+.task-table tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+.task-table tr:hover {
+  background: #f1f1f1;
+}
+
+/* ✅ Payment Info Section */
+.commission-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #e74c3c;
+  font-size: 14px;
+}
+
+.commission-amount {
+  font-weight: bold;
+}
+
+.tooltip {
+  position: relative;
+  cursor: pointer;
+  font-size: 14px;
+  color: #888;
+}
+
+.tooltip-text {
+  display: none;
+  position: absolute;
+  background: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 12px;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.tooltip:hover .tooltip-text {
+  display: block;
+}
+
+/* ✅ Button Styling */
+button {
+  padding: 8px 12px;
+  background: #3db358;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: #218838;
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* profile */
+.profile-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h2 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.user-info {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.user-info p {
+  font-size: 16px;
+  margin: 8px 0;
+  color: #444;
+}
+
+.user-info strong {
+  color: #222;
+}
+
+.review-card {
+  background: #f0f8ff; /* Light blue background */
+  border-left: 5px solid #007bff;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.review-card h3 {
+  font-size: 18px;
+  color: #0056b3;
+  margin-bottom: 8px;
+}
+
+.review-card p {
+  font-size: 14px;
+  color: #444;
+  margin: 5px 0;
+}
+
+.review-card strong {
+  color: #222;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: #ddd;
+  margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile-container {
+    width: 90%;
+    padding: 15px;
+  }
+
+  .review-card {
+    padding: 10px;
+  }
+}

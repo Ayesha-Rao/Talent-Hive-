@@ -5,6 +5,7 @@ const {
   addAgencyFreelancer,
   getAgencyFreelancers,
   removeFreelancer,
+  getUserDetails,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -31,5 +32,7 @@ router.delete(
   authorizeRoles("agencyOwner"),
   removeFreelancer
 );
+// ✅ Route to Get User Details
+router.get("/:userId", protect, getUserDetails);
 
 module.exports = router;
