@@ -71,36 +71,6 @@ const SubmitReview = () => {
     }
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (!selectedTask || !recipientId || !rating || !comment) {
-  //     setMessage("All fields are required.");
-  //     return;
-  //   }
-
-  //   try {
-  //     setLoading(true);
-  //     setMessage("");
-
-  //     const token = localStorage.getItem("token");
-  //     await axios.post(
-  //       "http://localhost:5000/api/reviews/submit",
-  //       { recipientId, taskId: selectedTask, rating: Number(rating), comment },
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
-
-  //     setMessage("Review submitted successfully!");
-  //     setRating("");
-  //     setComment("");
-  //     setSelectedTask("");
-  //     setRecipientId("");
-  //   } catch (error) {
-  //     console.error("Error submitting review:", error);
-  //     setMessage("Failed to submit review.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedTask || !recipientId || !rating || !comment) {
