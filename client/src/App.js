@@ -19,11 +19,12 @@ import AgencyTaskDetails from "./pages/agency/AgencyTaskDetails";
 import AgencyFreelancerDashboard from "./pages/agencyfreelancer/AgencyFreelancerDashboard";
 import TaskAssignment from "./pages/agency/TaskAssignment";
 import SubtaskDetails from "./pages/agencyfreelancer/SubTaskDetails";
-import AgencyOwnerPayments from "./pages/agency/AgencyOwnerPayment";
+
 import NotificationsPage from "./pages/NotificationsPage";
 import ReviewsPage from "./pages/ReviewsPage";
 import ProfilePage from "./pages/ProfilePage";
 import SubmitReview from "./pages/SubmitReview";
+import AgencyPaymentManagement from "./pages/agency/AgencyPaymentManagement";
 
 function App() {
   return (
@@ -79,7 +80,7 @@ function App() {
           />
           <Route
             path="/agency/manage-payments"
-            element={<AgencyOwnerPayments />}
+            element={<AgencyPaymentManagement />}
           />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/profile/:userId" element={<ProfilePage />} />

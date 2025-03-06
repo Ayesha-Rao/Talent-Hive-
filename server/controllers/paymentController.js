@@ -104,6 +104,68 @@ const getPaymentDetails = async (req, res) => {
   }
 };
 
+// const approvePayment = async (req, res) => {
+//   try {
+//     console.log("🔍 Approving Payment for Task ID:", req.body.taskId);
+
+//     const { taskId } = req.body;
+//     if (!taskId)
+//       return res.status(400).json({ message: "Task ID is required." });
+
+//     const task = await Task.findById(taskId);
+//     if (!task) return res.status(404).json({ message: "❌ Task not found." });
+
+//     if (task.status !== "completed") {
+//       return res.status(400).json({
+//         message: "❌ Task must be completed before approving payment.",
+//       });
+//     }
+
+//     let payment = await Payment.findOne({ taskId });
+//     if (!payment) {
+//       console.log("⚠️ No payment record found, creating a new one...");
+
+//       payment = new Payment({
+//         taskId,
+//         clientId: task.clientId,
+//         amount: task.budget, // ✅ Fix: Ensure amount is included
+//         status: "approved",
+//         freelancerId:
+//           task.assignedTo?.role === "independentFreelancer"
+//             ? task.assignedTo._id
+//             : null, // ✅ Store freelancerId
+//         agencyOwnerId:
+//           task.assignedTo?.role === "agencyOwner" ? task.assignedTo._id : null, // ✅ Store agencyOwnerId
+//       });
+
+//       await payment.save();
+//     } else {
+//       // ✅ If payment exists, update status to approved
+//       payment.status = "approved";
+//       await payment.save();
+//     }
+//     // ✅ Notify the freelancer or agency that payment is approved
+//     if (payment.freelancerId) {
+//       await createNotification(
+//         payment.freelancerId,
+//         `Payment approved for your completed task`,
+//         "payment"
+//       );
+//     } else if (payment.agencyOwnerId) {
+//       await createNotification(
+//         payment.agencyOwnerId,
+//         `Payment approved for your agency's task`,
+//         "payment"
+//       );
+//     }
+
+//     console.log("✅ Payment Approved:", payment);
+//     res.status(200).json({ message: "Payment approved successfully", payment });
+//   } catch (error) {
+//     console.error("❌ Error Approving Payment:", error);
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
 const approvePayment = async (req, res) => {
   try {
     console.log("🔍 Approving Payment for Task ID:", req.body.taskId);
@@ -112,9 +174,8 @@ const approvePayment = async (req, res) => {
     if (!taskId)
       return res.status(400).json({ message: "Task ID is required." });
 
-    const task = await Task.findById(taskId);
+    const task = await Task.findById(taskId).populate("assignedTo");
     if (!task) return res.status(404).json({ message: "❌ Task not found." });
-    
 
     if (task.status !== "completed") {
       return res.status(400).json({
@@ -122,29 +183,81 @@ const approvePayment = async (req, res) => {
       });
     }
 
+    console.log("✅ Task Found:", task);
+    console.log("🔹 Task Assigned To:", task.assignedTo);
+
     let payment = await Payment.findOne({ taskId });
     if (!payment) {
       console.log("⚠️ No payment record found, creating a new one...");
+
+      // ✅ Assign freelancerId or agencyOwnerId based on the task type
+      let freelancerId = null;
+      let agencyOwnerId = null;
+
+      if (task.assignedTo) {
+        console.log("🔹 Task Assigned To Role:", task.assignedTo.role);
+
+        if (task.assignedTo.role === "independentFreelancer") {
+          freelancerId = task.assignedTo._id;
+          console.log("✅ Storing freelancerId:", freelancerId);
+        } else if (task.assignedTo.role === "agencyOwner") {
+          agencyOwnerId = task.assignedTo._id;
+          console.log("✅ Storing agencyOwnerId:", agencyOwnerId);
+        }
+      }
+
       payment = new Payment({
         taskId,
         clientId: task.clientId,
-        amount: task.budget, // ✅ Fix: Ensure amount is included
+        amount: task.budget,
         status: "approved",
+        freelancerId, // ✅ Assign freelancerId
+        agencyOwnerId, // ✅ Assign agencyOwnerId
       });
+
       await payment.save();
     } else {
-      // ✅ If payment exists, update status to approved
+      console.log("✅ Existing Payment Found, Updating...");
       payment.status = "approved";
+
+      // ✅ Ensure freelancerId or agencyOwnerId is assigned if missing
+      if (!payment.freelancerId && !payment.agencyOwnerId) {
+        if (task.assignedTo) {
+          console.log(
+            "🔹 Checking Assigned User Role Again:",
+            task.assignedTo.role
+          );
+
+          if (task.assignedTo.role === "independentFreelancer") {
+            payment.freelancerId = task.assignedTo._id;
+            console.log("✅ Updated freelancerId:", payment.freelancerId);
+          } else if (task.assignedTo.role === "agencyOwner") {
+            payment.agencyOwnerId = task.assignedTo._id;
+            console.log("✅ Updated agencyOwnerId:", payment.agencyOwnerId);
+          }
+        }
+      }
+
       await payment.save();
     }
-      // ✅ Notify the freelancer or agency that payment is approved
-      if (payment.freelancerId) {
-        await createNotification(payment.freelancerId, `Payment approved for your completed task`, "payment");
+
+    console.log("✅ Final Payment Record:", payment);
+
+    // ✅ Notify the freelancer or agency that payment is approved
+    if (payment.freelancerId) {
+      await createNotification(
+        payment.freelancerId,
+        `Payment approved for your completed task`,
+        "payment"
+      );
     } else if (payment.agencyOwnerId) {
-        await createNotification(payment.agencyOwnerId, `Payment approved for your agency's task`, "payment");
+      await createNotification(
+        payment.agencyOwnerId,
+        `Payment approved for your agency's task`,
+        "payment"
+      );
     }
 
-    console.log("✅ Payment Approved:", payment);
     res.status(200).json({ message: "Payment approved successfully", payment });
   } catch (error) {
     console.error("❌ Error Approving Payment:", error);
@@ -161,29 +274,30 @@ const User = require("../models/User");
 //     console.log("🔹 Request Body:", req.body);
 
 //     const { paymentId } = req.body;
-
 //     const payment = await Payment.findById(paymentId);
-//     if (!payment)
+
+//     if (!payment) {
+//       console.log("❌ Payment not found");
 //       return res.status(404).json({ message: "Payment record not found." });
+//     }
 
 //     if (payment.status !== "approved") {
+//       console.log("❌ Payment must be approved before release.");
 //       return res
 //         .status(400)
 //         .json({ message: "Payment must be approved before release." });
 //     }
 
-//     // ✅ Independent Freelancer Payment (Direct Payment)
-//     if (payment.freelancerId) {
-//       console.log(
-//         "✅ Releasing payment to Independent Freelancer:",
-//         payment.freelancerId
-//       );
+//     console.log("✅ Payment Found:", payment);
 
-//       // Ensure `freelancersPaid` array gets updated correctly
+//     // ✅ Independent Freelancer Case
+//     if (payment.freelancerId) {
+//       console.log("✅ Paying Independent Freelancer:", payment.freelancerId);
+
 //       payment.freelancersPaid = [
 //         {
-//           freelancerId: payment.freelancerId.toString(), // Ensure it's stored as a string
-//           amount: payment.amount, // Full payment to freelancer
+//           freelancerId: payment.freelancerId.toString(),
+//           amount: payment.amount,
 //           status: "paid",
 //         },
 //       ];
@@ -191,18 +305,10 @@ const User = require("../models/User");
 //       payment.status = "paid";
 //       await payment.save();
 
-//       // Double-check the database update
-//       await Payment.updateOne(
-//         { _id: payment._id },
-//         {
-//           $set: {
-//             freelancersPaid: payment.freelancersPaid,
-//             status: "paid",
-//           },
-//         }
+//       console.log(
+//         "✅ Final freelancersPaid array (Independent):",
+//         payment.freelancersPaid
 //       );
-
-//       console.log("✅ Final freelancersPaid array:", payment.freelancersPaid);
 
 //       return res.status(200).json({
 //         message: "Payment released successfully",
@@ -210,47 +316,93 @@ const User = require("../models/User");
 //       });
 //     }
 
-//     // ✅ If it's an Agency Task, proceed with normal payment distribution
-//     const subtasks = await Subtask.find({
-//       taskId: payment.taskId,
-//       status: "completed",
-//     });
+//     // ✅ Agency Owner Payment
+//     if (payment.agencyOwnerId && !payment.agencyOwnerPaid) {
+//       console.log("✅ Paying Agency Owner:", payment.agencyOwnerId);
 
-//     if (subtasks.length === 0) {
+//       // Agency takes 5% commission
+//       const agencyCommission = payment.amount * 0.05;
+//       const totalAfterCommission = payment.amount - agencyCommission;
+
+//       console.log(`✅ Agency Commission Deducted: ${agencyCommission}`);
+//       console.log(`✅ Total Payment to Agency Owner: ${totalAfterCommission}`);
+
+//       // ✅ Mark Agency Owner as paid
+//       payment.freelancersPaid.push({
+//         freelancerId: payment.agencyOwnerId.toString(),
+//         amount: totalAfterCommission,
+//         status: "paid",
+//       });
+
+//       payment.commission = agencyCommission;
+//       payment.agencyOwnerPaid = true;
+//       await payment.save();
+
+//       console.log("✅ Agency Owner Paid:", payment.freelancersPaid);
 //       return res
-//         .status(400)
-//         .json({ message: "No completed subtasks found for this task." });
+//         .status(200)
+//         .json({ message: "Agency Owner Paid Successfully", payment });
 //     }
 
-//     let freelancerIds = [
-//       ...new Set(subtasks.map((subtask) => subtask.assignedTo.toString())),
-//     ];
+//     // ✅ Agency Owner Pays Freelancers
+//     if (payment.agencyOwnerPaid) {
+//       console.log("✅ Agency Owner Distributing Payments...");
 
-//     if (freelancerIds.length === 0) {
-//       return res
-//         .status(400)
-//         .json({ message: "No freelancers assigned to subtasks." });
+//       // ✅ Find completed subtasks for the task
+//       const subtasks = await Subtask.find({
+//         taskId: payment.taskId,
+//         status: "completed",
+//       });
+
+//       console.log("✅ Completed Subtasks Found:", subtasks.length);
+
+//       if (subtasks.length === 0) {
+//         return res
+//           .status(400)
+//           .json({ message: "No completed subtasks found for this task." });
+//       }
+
+//       // ✅ Get freelancers who worked on subtasks
+//       let freelancerIds = [
+//         ...new Set(subtasks.map((subtask) => subtask.assignedTo.toString())),
+//       ];
+
+//       console.log("✅ Freelancers Assigned to Subtasks:", freelancerIds);
+
+//       if (freelancerIds.length === 0) {
+//         return res
+//           .status(400)
+//           .json({ message: "No freelancers assigned to subtasks." });
+//       }
+
+//       // ✅ Divide payment after commission
+//       const paymentPerFreelancer =
+//         (payment.amount - payment.commission) / freelancerIds.length;
+
+//       freelancerIds.forEach((freelancerId) => {
+//         console.log(
+//           `✅ Paying Freelancer ${freelancerId}: ${paymentPerFreelancer}`
+//         );
+//         payment.freelancersPaid.push({
+//           freelancerId: freelancerId.toString(),
+//           amount: paymentPerFreelancer,
+//           status: "paid",
+//         });
+//       });
+
+//       payment.status = "paid";
+//       await payment.save();
+
+//       console.log("✅ Final Payment Distributed:", payment.freelancersPaid);
+
+//       return res.status(200).json({
+//         message: "Payment released successfully",
+//         agencyCommission: payment.commission,
+//         freelancersPaid: payment.freelancersPaid,
+//       });
 //     }
 
-//     const agencyCommission = payment.amount * 0.05;
-//     const totalAmountToDistribute = payment.amount - agencyCommission;
-//     const paymentPerFreelancer = totalAmountToDistribute / freelancerIds.length;
-
-//     payment.freelancersPaid = freelancerIds.map((freelancerId) => ({
-//       freelancerId: freelancerId.toString(), // Convert to string for consistency
-//       amount: paymentPerFreelancer,
-//       status: "paid",
-//     }));
-
-//     payment.commission = agencyCommission;
-//     payment.status = "paid";
-//     await payment.save();
-
-//     res.status(200).json({
-//       message: "Payment released successfully",
-//       agencyCommission: agencyCommission,
-//       freelancersPaid: payment.freelancersPaid,
-//     });
+//     return res.status(400).json({ message: "Unexpected Payment Flow Issue" });
 //   } catch (error) {
 //     console.error("❌ Error Releasing Payment:", error);
 //     res.status(500).json({ message: "Server error", error: error.message });
@@ -259,7 +411,7 @@ const User = require("../models/User");
 
 const releasePayment = async (req, res) => {
   try {
-    console.log("🔍 Releasing Payment...");
+    console.log("🔍 Releasing Payment for Agency Freelancer...");
     console.log("🔹 Request Body:", req.body);
 
     const { paymentId } = req.body;
@@ -277,165 +429,360 @@ const releasePayment = async (req, res) => {
         .json({ message: "Payment must be approved before release." });
     }
 
-    console.log("✅ Payment Found:", payment);
-
-    // ✅ Independent Freelancer Case
-    if (payment.freelancerId) {
-      console.log("✅ Paying Independent Freelancer:", payment.freelancerId);
-
-      payment.freelancersPaid = [
-        {
-          freelancerId: payment.freelancerId.toString(),
-          amount: payment.amount,
-          status: "paid",
-        },
-      ];
-
-      payment.status = "paid";
-      await payment.save();
-
-      console.log(
-        "✅ Final freelancersPaid array (Independent):",
-        payment.freelancersPaid
-      );
-
-      return res.status(200).json({
-        message: "Payment released successfully",
-        freelancersPaid: payment.freelancersPaid,
+    if (!payment.agencyOwnerId) {
+      console.log("❌ Payment is not for an agency task.");
+      return res.status(400).json({
+        message: "Only agency owners can release payments to freelancers.",
       });
     }
 
-    // ✅ Agency Owner Payment
-    if (payment.agencyOwnerId && !payment.agencyOwnerPaid) {
-      console.log("✅ Paying Agency Owner:", payment.agencyOwnerId);
+    console.log("✅ Payment Found for Agency Owner:", payment.agencyOwnerId);
 
-      // Agency takes 5% commission
-      const agencyCommission = payment.amount * 0.05;
-      const totalAfterCommission = payment.amount - agencyCommission;
+    // ✅ Find completed subtasks assigned to freelancers
+    const completedSubtasks = await Subtask.find({
+      taskId: payment.taskId,
+      status: "completed",
+    });
 
-      console.log(`✅ Agency Commission Deducted: ${agencyCommission}`);
-      console.log(`✅ Total Payment to Agency Owner: ${totalAfterCommission}`);
+    if (completedSubtasks.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No completed subtasks found for this task." });
+    }
 
-      // ✅ Mark Agency Owner as paid
+    // ✅ Get unique freelancers who worked on subtasks
+    let freelancerIds = [
+      ...new Set(
+        completedSubtasks.map((subtask) => subtask.assignedTo.toString())
+      ),
+    ];
+
+    if (freelancerIds.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No freelancers assigned to subtasks." });
+    }
+
+    console.log("✅ Freelancers Assigned to Subtasks:", freelancerIds);
+
+    // ✅ Deduct Agency Commission
+    const agencyCommission = payment.amount * 0.05;
+    const totalAfterCommission = payment.amount - agencyCommission;
+
+    console.log(`✅ Agency Commission Deducted: ${agencyCommission}`);
+    console.log(`✅ Total Amount to be distributed: ${totalAfterCommission}`);
+
+    // ✅ Divide remaining amount among freelancers
+    const paymentPerFreelancer = totalAfterCommission / freelancerIds.length;
+
+    freelancerIds.forEach((freelancerId) => {
+      console.log(
+        `✅ Paying Freelancer ${freelancerId}: ${paymentPerFreelancer}`
+      );
       payment.freelancersPaid.push({
-        freelancerId: payment.agencyOwnerId.toString(),
-        amount: totalAfterCommission,
+        freelancerId: freelancerId.toString(),
+        amount: paymentPerFreelancer,
         status: "paid",
       });
+    });
 
-      payment.commission = agencyCommission;
-      payment.agencyOwnerPaid = true;
-      await payment.save();
+    payment.commission = agencyCommission;
+    payment.status = "paid"; // ✅ Mark full payment as done
+    await payment.save();
 
-      console.log("✅ Agency Owner Paid:", payment.freelancersPaid);
-      return res
-        .status(200)
-        .json({ message: "Agency Owner Paid Successfully", payment });
-    }
+    console.log("✅ Final Payment Distributed:", payment.freelancersPaid);
 
-    // ✅ Agency Owner Pays Freelancers
-    if (payment.agencyOwnerPaid) {
-      console.log("✅ Agency Owner Distributing Payments...");
-
-      // ✅ Find completed subtasks for the task
-      const subtasks = await Subtask.find({
-        taskId: payment.taskId,
-        status: "completed",
-      });
-
-      console.log("✅ Completed Subtasks Found:", subtasks.length);
-
-      if (subtasks.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "No completed subtasks found for this task." });
-      }
-
-      // ✅ Get freelancers who worked on subtasks
-      let freelancerIds = [
-        ...new Set(subtasks.map((subtask) => subtask.assignedTo.toString())),
-      ];
-
-      console.log("✅ Freelancers Assigned to Subtasks:", freelancerIds);
-
-      if (freelancerIds.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "No freelancers assigned to subtasks." });
-      }
-
-      // ✅ Divide payment after commission
-      const paymentPerFreelancer =
-        (payment.amount - payment.commission) / freelancerIds.length;
-
-      freelancerIds.forEach((freelancerId) => {
-        console.log(
-          `✅ Paying Freelancer ${freelancerId}: ${paymentPerFreelancer}`
-        );
-        payment.freelancersPaid.push({
-          freelancerId: freelancerId.toString(),
-          amount: paymentPerFreelancer,
-          status: "paid",
-        });
-      });
-
-      payment.status = "paid";
-      await payment.save();
-
-      console.log("✅ Final Payment Distributed:", payment.freelancersPaid);
-
-      return res.status(200).json({
-        message: "Payment released successfully",
-        agencyCommission: payment.commission,
-        freelancersPaid: payment.freelancersPaid,
-      });
-    }
-
-    return res.status(400).json({ message: "Unexpected Payment Flow Issue" });
+    return res.status(200).json({
+      message: "Payment released successfully to freelancers",
+      agencyCommission: payment.commission,
+      freelancersPaid: payment.freelancersPaid,
+    });
   } catch (error) {
     console.error("❌ Error Releasing Payment:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
+// const getFreelancerPayments = async (req, res) => {
+//   try {
+//     const freelancerId = req.user.id; // Get logged-in freelancer ID
+//     console.log("🔍 Fetching Payment History for Freelancer:", freelancerId);
+
+//     // Find all payments where this freelancer was paid
+//     const payments = await Payment.find({
+//       "freelancersPaid.freelancerId": freelancerId,
+//     })
+//       .populate("taskId", "title")
+//       .populate("freelancersPaid.freelancerId", "name email");
+
+//     if (payments.length === 0) {
+//       console.log("❌ No payments found for this freelancer.");
+//       return res
+//         .status(404)
+//         .json({ message: "No payments found for this freelancer." });
+//     }
+
+//     // ✅ Only return freelancer's payment details
+//     const response = payments.map((payment) => {
+//       const freelancerPayment = payment.freelancersPaid.find(
+//         (fp) => fp.freelancerId._id.toString() === freelancerId
+//       );
+//       return {
+//         taskId: payment.taskId?._id,
+//         taskTitle: payment.taskId?.title,
+//         amountPaid: freelancerPayment ? freelancerPayment.amount : 0,
+//         status: payment.status,
+//       };
+//     });
+
+//     res.status(200).json({
+//       message: "Payment history retrieved successfully",
+//       payments: response,
+//     });
+//   } catch (error) {
+//     console.error("❌ Error Fetching Freelancer Payments:", error);
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
+
+// const getFreelancerPayments = async (req, res) => {
+//   try {
+//     const freelancerId = req.user.id; // Get logged-in freelancer ID
+//     console.log("🔍 Fetching Payment History for Freelancer:", freelancerId);
+
+//     // ✅ Find all payments where this freelancer was paid (Independent & Agency Freelancer)
+//     const payments = await Payment.find({
+//       $or: [
+//         { freelancerId: freelancerId }, // ✅ Independent Freelancer
+//         { "freelancersPaid.freelancerId": freelancerId }, // ✅ Agency Freelancer
+//       ],
+//     })
+//       .populate("taskId", "title")
+//       .populate("freelancerId", "name email") // ✅ Populate Independent Freelancer
+//       .populate("freelancersPaid.freelancerId", "name email"); // ✅ Populate Agency Freelancer
+
+//     if (payments.length === 0) {
+//       console.log("❌ No payments found for this freelancer.");
+//       return res
+//         .status(404)
+//         .json({ message: "No payments found for this freelancer." });
+//     }
+
+//     // ✅ Format response for both independent and agency freelancers
+//     const response = payments.map((payment) => {
+//       // ✅ Check if the freelancer is an independent freelancer
+//       if (payment.freelancerId?.toString() === freelancerId) {
+//         return {
+//           taskId: payment.taskId?._id,
+//           taskTitle: payment.taskId?.title,
+//           amountPaid: payment.amount,
+//           status: payment.status,
+//           type: "Independent Freelancer",
+//         };
+//       }
+
+//       // ✅ If the freelancer is an agency freelancer, extract their payment info
+//       const freelancerPayment = payment.freelancersPaid.find(
+//         (fp) => fp.freelancerId._id.toString() === freelancerId
+//       );
+
+//       return {
+//         taskId: payment.taskId?._id,
+//         taskTitle: payment.taskId?.title,
+//         amountPaid: freelancerPayment ? freelancerPayment.amount : 0,
+//         status: payment.status,
+//         type: "Agency Freelancer",
+//       };
+//     });
+
+//     res.status(200).json({
+//       message: "Payment history retrieved successfully",
+//       payments: response,
+//     });
+//   } catch (error) {
+//     console.error("❌ Error Fetching Freelancer Payments:", error);
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
+
+// const getFreelancerPayments = async (req, res) => {
+//   try {
+//     const userId = req.user.id; // Get logged-in user ID
+//     console.log("🔍 Fetching Payment History for User:", userId);
+
+//     // ✅ Debug: Log stored values before querying
+//     const allPayments = await Payment.find();
+//     console.log("🛠️ Stored Payments in DB:", allPayments);
+
+//     // ✅ Find payments where this user was paid
+//     const payments = await Payment.find({
+//       $or: [
+//         { freelancerId: userId }, // ✅ Independent Freelancer Payment
+//         { agencyOwnerId: userId }, // ✅ Agency Owner Payment
+//         { "freelancersPaid.freelancerId": userId }, // ✅ Agency Freelancer Payment
+//       ],
+//     })
+//       .populate("taskId", "title")
+//       .populate("freelancerId", "name email") // ✅ Independent Freelancer
+//       .populate("agencyOwnerId", "name email") // ✅ Agency Owner
+//       .populate("freelancersPaid.freelancerId", "name email"); // ✅ Paid Agency Freelancers
+
+//     console.log("✅ Payments Found:", payments);
+
+//     if (!payments || payments.length === 0) {
+//       console.log("❌ No payments found for this user.");
+//       return res
+//         .status(404)
+//         .json({ message: "No payments found for this user." });
+//     }
+
+//     // ✅ Format response to return only relevant records for logged-in user
+//     const response = payments
+//       .map((payment) => {
+//         // ✅ Independent Freelancer Payment
+//         if (payment.freelancerId?.toString() === userId) {
+//           return {
+//             taskId: payment.taskId?._id,
+//             taskTitle: payment.taskId?.title,
+//             amountPaid: payment.amount, // ✅ Full payment for independent freelancer
+//             status: payment.status,
+//             type: "Independent Freelancer",
+//           };
+//         }
+
+//         // ✅ Agency Owner Payment
+//         if (payment.agencyOwnerId?.toString() === userId) {
+//           return {
+//             taskId: payment.taskId?._id,
+//             taskTitle: payment.taskId?.title,
+//             amountPaid: payment.amount - payment.commission, // ✅ Deduct commission
+//             status: payment.status,
+//             type: "Agency Owner",
+//           };
+//         }
+
+//         // ✅ Agency Freelancer Payment
+//         const freelancerPayment = payment.freelancersPaid.find(
+//           (fp) => fp.freelancerId._id.toString() === userId
+//         );
+
+//         if (freelancerPayment) {
+//           return {
+//             taskId: payment.taskId?._id,
+//             taskTitle: payment.taskId?.title,
+//             amountPaid: freelancerPayment.amount || 0, // ✅ Get amount paid from freelancersPaid array
+//             status: payment.status,
+//             type: "Agency Freelancer",
+//           };
+//         }
+
+//         return null; // ✅ Prevents returning undefined values
+//       })
+//       .filter(Boolean); // ✅ Removes `null` values
+
+//     res.status(200).json({
+//       message: "Payment history retrieved successfully",
+//       payments: response,
+//     });
+//   } catch (error) {
+//     console.error("❌ Error Fetching User Payments:", error);
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
 const getFreelancerPayments = async (req, res) => {
   try {
-    const freelancerId = req.user.id; // Get logged-in freelancer ID
-    console.log("🔍 Fetching Payment History for Freelancer:", freelancerId);
+    const userId = req.user.id; // Get logged-in user ID
+    console.log("🔍 Fetching Payment History for User:", userId);
 
-    // Find all payments where this freelancer was paid
+    // ✅ Find payments where this user was paid
     const payments = await Payment.find({
-      "freelancersPaid.freelancerId": freelancerId,
+      $or: [
+        { freelancerId: userId }, // ✅ Independent Freelancer Payment
+        { agencyOwnerId: userId }, // ✅ Agency Owner Payment
+        { "freelancersPaid.freelancerId": userId }, // ✅ Agency Freelancer Payment
+      ],
     })
       .populate("taskId", "title")
-      .populate("freelancersPaid.freelancerId", "name email");
+      .populate("freelancerId", "name email") // ✅ Independent Freelancer
+      .populate("agencyOwnerId", "name email") // ✅ Agency Owner
+      .populate("freelancersPaid.freelancerId", "name email"); // ✅ Paid Agency Freelancers
 
-    if (payments.length === 0) {
-      console.log("❌ No payments found for this freelancer.");
+    console.log("✅ Payments Found:", payments);
+
+    if (!payments || payments.length === 0) {
+      console.log("❌ No payments found for this user.");
       return res
         .status(404)
-        .json({ message: "No payments found for this freelancer." });
+        .json({ message: "No payments found for this user." });
     }
 
-    // ✅ Only return freelancer's payment details
-    const response = payments.map((payment) => {
-      const freelancerPayment = payment.freelancersPaid.find(
-        (fp) => fp.freelancerId._id.toString() === freelancerId
-      );
-      return {
-        taskId: payment.taskId?._id,
-        taskTitle: payment.taskId?.title,
-        amountPaid: freelancerPayment ? freelancerPayment.amount : 0,
-        status: payment.status,
-      };
-    });
+    // ✅ Format response for all roles
+    const response = payments
+      .map((payment) => {
+        console.log("🔹 Processing Payment:", payment);
+
+        // ✅ Independent Freelancer Payment
+        if (
+          payment.freelancerId &&
+          payment.freelancerId._id.toString() === userId
+        ) {
+          console.log("✅ Independent Freelancer Payment Found:", payment);
+          return {
+            paymentId: payment._id, // ✅ Add paymentId here
+            taskId: payment.taskId?._id,
+            taskTitle: payment.taskId?.title,
+            amountPaid: payment.amount, // ✅ Full payment for independent freelancer
+            status: payment.status,
+            type: "Independent Freelancer",
+          };
+        }
+
+        // ✅ Agency Owner Payment
+        if (
+          payment.agencyOwnerId &&
+          payment.agencyOwnerId._id.toString() === userId
+        ) {
+          console.log("✅ Agency Owner Payment Found:", payment);
+          return {
+            paymentId: payment._id, // ✅ Add paymentId here
+            taskId: payment.taskId?._id,
+            taskTitle: payment.taskId?.title,
+            amountPaid: payment.amount - payment.commission, // ✅ Deduct commission
+            status: payment.status,
+            type: "Agency Owner",
+          };
+        }
+
+        // ✅ Agency Freelancer Payment
+        const freelancerPayment = payment.freelancersPaid.find(
+          (fp) => fp.freelancerId && fp.freelancerId._id.toString() === userId
+        );
+
+        if (freelancerPayment) {
+          console.log("✅ Agency Freelancer Payment Found:", freelancerPayment);
+          return {
+            paymentId: payment._id, // ✅ Add paymentId here
+            taskId: payment.taskId?._id,
+            taskTitle: payment.taskId?.title,
+            amountPaid: freelancerPayment.amount || 0, // ✅ Get amount paid from freelancersPaid array
+            status: payment.status,
+            type: "Agency Freelancer",
+          };
+        }
+
+        console.log("❌ Payment does not match user role, skipping.");
+        return null; // ✅ Prevents returning undefined values
+      })
+      .filter(Boolean); // ✅ Removes `null` values
+
+    console.log("✅ Final Response:", response);
 
     res.status(200).json({
       message: "Payment history retrieved successfully",
       payments: response,
     });
   } catch (error) {
-    console.error("❌ Error Fetching Freelancer Payments:", error);
+    console.error("❌ Error Fetching User Payments:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

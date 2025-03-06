@@ -80,7 +80,7 @@ const PaymentSchema = new mongoose.Schema(
     },
 
     // ✅ Tracks whether the agency owner has received payment from the client
-    agencyOwnerPaid: { type: Boolean, default: false },
+    // agencyOwnerPaid: { type: Boolean, default: false },
 
     // ✅ List of freelancers paid (for agency freelancers)
     freelancersPaid: [

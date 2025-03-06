@@ -3,7 +3,6 @@ const Task = require("../models/Task");
 const User = require("../models/User");
 const Subtask = require("../models/Subtask");
 
-
 const submitReview = async (req, res) => {
   try {
     const { recipientId, taskId, rating, comment } = req.body;
@@ -44,22 +43,18 @@ const submitReview = async (req, res) => {
       if (task.clientId.toString() === recipientId) {
         validReview = true;
       }
-    } 
-    else if (reviewerRole === "agencyOwner") {
+    } else if (reviewerRole === "agencyOwner") {
       // ✅ Agency Owners can review Agency Freelancers
-     
+
       if (task.clientId.toString() === recipientId) {
         validReview = true;
       }
-    } 
-    else if (reviewerRole === "agencyOwner") {
+    } else if (reviewerRole === "agencyOwner") {
       // ✅ Agency Owners can review Agency Freelancers
       if (subtask && subtask.assignedTo.toString() === recipientId) {
         validReview = true;
       }
-    }
-   
-    else if (reviewerRole === "agencyFreelancer") {
+    } else if (reviewerRole === "agencyFreelancer") {
       // ✅ Agency Freelancers can review Agency Owners (based on agencyId field)
       const reviewer = await User.findById(req.user.id);
       if (reviewer.agencyId?.toString() === recipientId) {
@@ -104,8 +99,6 @@ const submitReview = async (req, res) => {
   }
 };
 
-
-
 // ✅ Get Reviews for a Specific User (Including Reviewer & Task Details)
 const getUserReviews = async (req, res) => {
   try {
@@ -115,12 +108,6 @@ const getUserReviews = async (req, res) => {
     const reviews = await Review.find({ recipientId: userId })
       .populate("reviewerId", "name email") // ✅ Fetch the person who gave the review
       .populate("taskId", "title"); // ✅ Fetch the task title
-
-    // if (!reviews || reviews.length === 0) {
-    //   return res
-    //     .status(404)
-    //     .json({ message: "No reviews found for this user." });
-    // }
 
     res.status(200).json(reviews);
   } catch (error) {
