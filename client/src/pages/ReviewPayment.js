@@ -14,9 +14,12 @@ const ReviewPayment = () => {
     const fetchTaskDetails = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://localhost:5000/api/tasks/${taskId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          `http://localhost:5000/api/tasks/${taskId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         setTask(response.data);
         setLoading(false);
@@ -58,13 +61,24 @@ const ReviewPayment = () => {
         <h2>Review and Approve Payment</h2>
         {task ? (
           <div>
-            <p><strong>Task:</strong> {task.title}</p>
-            <p><strong>Submitted Work:</strong> (Freelancer has completed the task)</p>
-            <p><strong>Budget:</strong> ${task.budget}</p>
+            <p>
+              <strong>Task:</strong> {task.title}
+            </p>
+            <p>
+              <strong>Submitted Work:</strong> (Freelancer has completed the
+              task)
+            </p>
+            <p>
+              <strong>Budget:</strong> ${task.budget}
+            </p>
 
             <div className="action-buttons">
-              <button className="approve-btn" onClick={handleApprove}>Approve Payment</button>
-              <button className="revision-btn" onClick={handleRequestRevisions}>Request Revisions</button>
+              <button className="approve-btn" onClick={handleApprove}>
+                Approve Payment
+              </button>
+              <button className="revision-btn" onClick={handleRequestRevisions}>
+                Request Revisions
+              </button>
             </div>
           </div>
         ) : (

@@ -11,14 +11,17 @@ const PaymentHistory = () => {
     const fetchPayments = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/payments/freelancer/:freelancerId", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          "http://localhost:5000/api/payments/freelancer/:freelancerId",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         setPayments(response.data.payments);
         setLoading(false);
       } catch (error) {
-        console.error("❌ Error fetching payments:", error);
+        console.error("Error fetching payments:", error);
         setLoading(false);
       }
     };
@@ -37,9 +40,15 @@ const PaymentHistory = () => {
           <ul>
             {payments.map((payment) => (
               <li key={payment.taskId}>
-                <p><strong>Task ID:</strong> {payment.taskId}</p>
-                <p><strong>Amount Paid:</strong> ${payment.amountPaid}</p>
-                <p><strong>Status:</strong> {payment.status}</p>
+                <p>
+                  <strong>Task ID:</strong> {payment.taskId}
+                </p>
+                <p>
+                  <strong>Amount Paid:</strong> ${payment.amountPaid}
+                </p>
+                <p>
+                  <strong>Status:</strong> {payment.status}
+                </p>
               </li>
             ))}
           </ul>

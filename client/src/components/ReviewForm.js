@@ -12,10 +12,10 @@ const ReviewForm = ({ completedTasks }) => {
 
     try {
       await submitReview({ taskId, recipientId, rating, comment });
-      alert("✅ Review submitted successfully!");
+      alert("Review submitted successfully!");
       window.location.reload(); // Refresh the page to update reviews
     } catch (error) {
-      alert("❌ Error submitting review.");
+      alert("Error submitting review.");
     }
   };
 
@@ -23,7 +23,7 @@ const ReviewForm = ({ completedTasks }) => {
     <div className="review-form">
       <h3>Submit a Review</h3>
       <form onSubmit={handleSubmit}>
-        {/* ✅ Select Task */}
+        {/* Select Task */}
         <label>Select Task:</label>
         <select
           value={taskId}
@@ -38,7 +38,7 @@ const ReviewForm = ({ completedTasks }) => {
           ))}
         </select>
 
-        {/* ✅ Select Recipient */}
+        {/* Select Recipient */}
         <label>Select User to Review:</label>
         <select
           value={recipientId}
@@ -56,7 +56,7 @@ const ReviewForm = ({ completedTasks }) => {
             ))}
         </select>
 
-        {/* ✅ Rating */}
+        {/* Rating */}
         <label>Rating (1-5):</label>
         <input
           type="number"
@@ -67,7 +67,7 @@ const ReviewForm = ({ completedTasks }) => {
           required
         />
 
-        {/* ✅ Comment */}
+        {/* Comment */}
         <label>Comment:</label>
         <textarea
           value={comment}

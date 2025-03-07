@@ -5,7 +5,7 @@ import Navbar from "../../components/Navbar";
 import "./TaskDetails.css";
 
 const FreelancerTaskDetails = () => {
-  const { taskId } = useParams(); // Get Task ID from URL
+  const { taskId } = useParams();
   const navigate = useNavigate();
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,14 +14,17 @@ const FreelancerTaskDetails = () => {
     const fetchTaskDetails = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://localhost:5000/api/tasks/${taskId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          `http://localhost:5000/api/tasks/${taskId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         setTask(response.data);
         setLoading(false);
       } catch (error) {
-        console.error("❌ Error fetching task details:", error);
+        console.error("Error fetching task details:", error);
         setLoading(false);
       }
     };
@@ -39,9 +42,9 @@ const FreelancerTaskDetails = () => {
       );
 
       alert("Task marked as completed!");
-      navigate("/freelancer/dashboard"); // Redirect back to dashboard
+      navigate("/freelancer/dashboard");
     } catch (error) {
-      console.error("❌ Error marking task complete:", error);
+      console.error("Error marking task complete:", error);
       alert("Error marking task as complete: " + error.response?.data?.message);
     }
   };
@@ -55,11 +58,22 @@ const FreelancerTaskDetails = () => {
         <h2>Task Details</h2>
         {task ? (
           <div>
-            <p><strong>Title:</strong> {task.title}</p>
-            <p><strong>Description:</strong> {task.description}</p>
-            <p><strong>Budget:</strong> ${task.budget}</p>
-            <p><strong>Deadline:</strong> {new Date(task.deadline).toLocaleDateString()}</p>
-            <p><strong>Status:</strong> {task.status}</p>
+            <p>
+              <strong>Title:</strong> {task.title}
+            </p>
+            <p>
+              <strong>Description:</strong> {task.description}
+            </p>
+            <p>
+              <strong>Budget:</strong> ${task.budget}
+            </p>
+            <p>
+              <strong>Deadline:</strong>{" "}
+              {new Date(task.deadline).toLocaleDateString()}
+            </p>
+            <p>
+              <strong>Status:</strong> {task.status}
+            </p>
 
             {task.status !== "completed" && (
               <button onClick={markComplete} className="complete-btn">

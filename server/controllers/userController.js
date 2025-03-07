@@ -1,14 +1,13 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
-// ✅ Agency Owner Adds an Agency Freelancer
 const addAgencyFreelancer = async (req, res) => {
   try {
-    console.log("🔍 Adding Agency Freelancer...");
-    console.log("🔹 Logged-in User:", req.user);
+    console.log("Adding Agency Freelancer...");
+    console.log("Logged-in User:", req.user);
 
     if (req.user.role !== "agencyOwner") {
-      console.log("❌ Access Denied: Not an Agency Owner");
+      console.log("Access Denied: Not an Agency Owner");
       return res
         .status(403)
         .json({ message: "Only Agency Owners can add Agency Freelancers." });
@@ -16,7 +15,6 @@ const addAgencyFreelancer = async (req, res) => {
 
     const { name, email, password, skills } = req.body;
 
-    // Check if the freelancer already exists
     let existingUser = await User.findOne({ email });
     if (existingUser) {
       return res
@@ -24,10 +22,8 @@ const addAgencyFreelancer = async (req, res) => {
         .json({ message: "User with this email already exists." });
     }
 
-    // Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new freelancer under the agency
     const freelancer = new User({
       name,
       email,
@@ -38,14 +34,14 @@ const addAgencyFreelancer = async (req, res) => {
     });
 
     await freelancer.save();
-    console.log("✅ Agency Freelancer Added Successfully:", freelancer);
+    console.log("Agency Freelancer Added Successfully:", freelancer);
 
     res.status(201).json({
       message: "Agency Freelancer added successfully",
       freelancer,
     });
   } catch (error) {
-    console.error("❌ Error Adding Freelancer:", error);
+    console.error("Error Adding Freelancer:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -66,13 +62,13 @@ const getAgencyFreelancers = async (req, res) => {
 
     res.status(200).json(freelancers);
   } catch (error) {
-    console.error("❌ Error Fetching Freelancers:", error);
+    console.error("Error Fetching Freelancers:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 const removeFreelancer = async (req, res) => {
   try {
-    console.log("🗑 Removing Freelancer:", req.params.id);
+    console.log("Removing Freelancer:", req.params.id);
 
     if (req.user.role !== "agencyOwner") {
       return res
@@ -90,17 +86,15 @@ const removeFreelancer = async (req, res) => {
     await User.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Freelancer removed successfully." });
   } catch (error) {
-    console.error("❌ Error Removing Freelancer:", error);
+    console.error("Error Removing Freelancer:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// ✅ Get User Details by ID
 const getUserDetails = async (req, res) => {
   try {
     const userId = req.params.userId;
 
-    // ✅ Fetch user by ID, exclude password for security
     const user = await User.findById(userId).select("-password");
 
     if (!user) {
@@ -109,7 +103,7 @@ const getUserDetails = async (req, res) => {
 
     res.status(200).json(user);
   } catch (error) {
-    console.error("❌ Error Fetching User Details:", error);
+    console.error("Error Fetching User Details:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

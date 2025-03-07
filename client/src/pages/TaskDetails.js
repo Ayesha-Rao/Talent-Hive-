@@ -1,4 +1,3 @@
-// export default TaskDetails;
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -9,9 +8,9 @@ const TaskDetails = () => {
   const { taskId } = useParams();
   const navigate = useNavigate();
   const [task, setTask] = useState(null);
-  const [bids, setBids] = useState([]); // Store bids separately
+  const [bids, setBids] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [assigned, setAssigned] = useState(false); // Track if task is assigned
+  const [assigned, setAssigned] = useState(false);
 
   useEffect(() => {
     const fetchTaskDetails = async () => {
@@ -28,7 +27,7 @@ const TaskDetails = () => {
 
         setTask(taskResponse.data);
 
-        // ✅ Check if task is already assigned
+        //if task is already assigned
         if (taskResponse.data.assignedTo) {
           setAssigned(true);
         }
@@ -41,7 +40,6 @@ const TaskDetails = () => {
       try {
         const token = localStorage.getItem("token");
 
-        // Fetch bids for this task
         const bidsResponse = await axios.get(
           `http://localhost:5000/api/bids/${taskId}`,
           {
@@ -49,7 +47,7 @@ const TaskDetails = () => {
           }
         );
 
-        setBids(bidsResponse.data); // Store bids separately
+        setBids(bidsResponse.data);
       } catch (error) {
         console.error("Error fetching bids:", error);
       } finally {
@@ -73,8 +71,8 @@ const TaskDetails = () => {
       );
 
       alert("Task assigned successfully!");
-      setAssigned(true); // ✅ Disable all buttons after first assignment
-      navigate("/client/dashboard"); // Redirect to dashboard
+      setAssigned(true);
+      navigate("/client/dashboard");
     } catch (error) {
       alert("Error assigning task: " + error.response.data.message);
     }
@@ -134,7 +132,7 @@ const TaskDetails = () => {
                     </div>
                     <button
                       onClick={() => handleAssignTask(bid.bidderId?._id)}
-                      disabled={assigned} // ✅ Disable all buttons if assigned
+                      disabled={assigned}
                     >
                       {assigned ? "Assigned" : "Assign"}
                     </button>

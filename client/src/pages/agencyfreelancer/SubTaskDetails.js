@@ -5,7 +5,7 @@ import Navbar from "../../components/Navbar";
 import "./SubtaskDetails.css";
 
 const SubtaskDetails = () => {
-  const { subtaskId } = useParams(); // Get subtask ID from URL
+  const { subtaskId } = useParams();
   const [subtask, setSubtask] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -14,7 +14,6 @@ const SubtaskDetails = () => {
       try {
         const token = localStorage.getItem("token");
 
-        // Fetch all assigned subtasks
         const response = await axios.get(
           "http://localhost:5000/api/subtasks/assigned/me",
           {
@@ -22,7 +21,6 @@ const SubtaskDetails = () => {
           }
         );
 
-        // Find the subtask with the given subtaskId
         const foundSubtask = response.data.find((s) => s._id === subtaskId);
 
         if (foundSubtask) {

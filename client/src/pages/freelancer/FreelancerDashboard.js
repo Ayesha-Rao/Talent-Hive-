@@ -19,17 +19,15 @@ const FreelancerDashboard = () => {
       try {
         const token = localStorage.getItem("token");
 
-        // Get Available Tasks (Open tasks)
         const availableResponse = await axios.get(
           "http://localhost:5000/api/tasks/open",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log("🔍 Available Tasks Response:", availableResponse.data); // ✅ Debugging API data
+        console.log("🔍 Available Tasks Response:", availableResponse.data);
         setAvailableTasks(availableResponse.data);
 
-        // Get Assigned Tasks (Tasks assigned to freelancer)
         const assignedResponse = await axios.get(
           "http://localhost:5000/api/tasks/assigned",
           {
@@ -40,7 +38,6 @@ const FreelancerDashboard = () => {
         setAvailableTasks(availableResponse.data);
         setAssignedTasks(assignedResponse.data);
 
-        // Calculate Task Stats
         const assigned = assignedResponse.data.length;
         const inProgress = assignedResponse.data.filter(
           (task) => task.status === "assigned"
@@ -79,7 +76,6 @@ const FreelancerDashboard = () => {
                 <span>
                   Posted by: <strong>{task.clientId?.name || "Unknown"}</strong>
                 </span>{" "}
-                {/* Show Client Name */}
                 <button
                   onClick={() => navigate(`/freelancer/task/${task._id}/bid`)}
                 >

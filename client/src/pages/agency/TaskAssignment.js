@@ -1,15 +1,14 @@
-// export default TaskAssignment;
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
-import "./TaskAssignment.css"; // Import CSS file for styling
+import "./TaskAssignment.css";
 
 const TaskAssignment = () => {
-  const { taskId } = useParams(); // Get Task ID from URL
+  const { taskId } = useParams();
   const [task, setTask] = useState(null);
   const [subtasks, setSubtasks] = useState([]);
-  const [agencyFreelancers, setAgencyFreelancers] = useState([]); // Store freelancers
+  const [agencyFreelancers, setAgencyFreelancers] = useState([]);
   const [freelancers, setFreelancers] = useState([]);
   const [newSubtask, setNewSubtask] = useState({
     description: "",
@@ -25,12 +24,12 @@ const TaskAssignment = () => {
     // agencyFreelancers();
   }, [taskId]);
 
-  // ✅ Fetch Task Details
+  // Fetch Task Details
   const fetchTaskDetails = async () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:5000/api/tasks/${taskId}`, // ✅ Fetch correct assigned task
+        `http://localhost:5000/api/tasks/${taskId}`, // Fetch correct assigned task
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -40,7 +39,7 @@ const TaskAssignment = () => {
     }
   };
 
-  // ✅ Fetch Existing Subtasks
+  // Fetch Existing Subtasks
   const fetchSubtasks = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -60,13 +59,13 @@ const TaskAssignment = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:5000/api/users/agency-freelancers", // Fetch agency freelancers
+          "http://localhost:5000/api/users/agency-freelancers",
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setAgencyFreelancers(response.data); // Store freelancers in state
+        setAgencyFreelancers(response.data);
       } catch (error) {
         console.error(
-          "❌ Error Fetching Agency Freelancers:",
+          "Error Fetching Agency Freelancers:",
           error.response?.data || error
         );
       }
@@ -80,7 +79,7 @@ const TaskAssignment = () => {
     try {
       const token = localStorage.getItem("token");
 
-      console.log("🟢 Creating Subtask with Data:", {
+      console.log("Creating Subtask with Data:", {
         taskId,
         description: newSubtask.description,
         deadline: newSubtask.deadline,
@@ -104,10 +103,7 @@ const TaskAssignment = () => {
       fetchSubtasks(); // Refresh subtasks list
       setNewSubtask({ description: "", deadline: "", assignedTo: "" });
     } catch (error) {
-      console.error(
-        "❌ Error Creating Subtask:",
-        error.response?.data || error
-      );
+      console.error("Error Creating Subtask:", error.response?.data || error);
       alert(
         "Error creating subtask: " +
           (error.response?.data?.message || error.message)
@@ -126,7 +122,7 @@ const TaskAssignment = () => {
       );
 
       alert("Subtask assigned successfully!");
-      fetchSubtasks(); // Refresh list
+      fetchSubtasks();
     } catch (error) {
       alert("Error assigning subtask: " + error.response.data.message);
     }
@@ -138,7 +134,6 @@ const TaskAssignment = () => {
       <div className="task-assignment-container">
         <h2>Task Breakdown & Assignment</h2>
 
-        {/* Task Details */}
         {task ? (
           <div className="task-details">
             <p>
@@ -159,7 +154,6 @@ const TaskAssignment = () => {
           <p>Loading task details...</p>
         )}
 
-        {/* Create Subtask Form */}
         <h3>Create a Subtask</h3>
 
         <form onSubmit={handleCreateSubtask}>
@@ -200,7 +194,6 @@ const TaskAssignment = () => {
           <button type="submit">Create Subtask</button>
         </form>
 
-        {/* Subtasks List */}
         <h3>Subtasks</h3>
         <ul className="subtask-list">
           {subtasks.length > 0 ? (

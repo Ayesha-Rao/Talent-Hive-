@@ -19,15 +19,15 @@ const Login = () => {
         formData
       );
       const { token, role, user } = response.data;
-       // ✅ Make sure "user" exists in response
-    if (!user || !user._id) {
-      console.error("❌ Error: User data is missing in response.");
-      return;
-    }
+
+      if (!user || !user._id) {
+        console.error("Error: User data is missing in response.");
+        return;
+      }
 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("role", response.data.role);
-      localStorage.setItem("user", JSON.stringify(user)); // ✅ Store full user info
+      localStorage.setItem("user", JSON.stringify(user));
 
       // Redirect based on role
       switch (response.data.role) {
@@ -79,16 +79,6 @@ const Login = () => {
       </div>
     </div>
   );
-  //    (
-  //     <div>
-  //       <h2>Login</h2>
-  //       <form onSubmit={handleSubmit}>
-  //         <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-  //         <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
-  //         <button type="submit">Login</button>
-  //       </form>
-  //     </div>
-  //   );
 };
 
 export default Login;

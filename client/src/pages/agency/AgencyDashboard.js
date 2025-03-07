@@ -21,7 +21,6 @@ const AgencyDashboard = () => {
       try {
         const token = localStorage.getItem("token");
 
-        // Get Available Tasks (Open tasks)
         const availableResponse = await axios.get(
           "http://localhost:5000/api/tasks/open",
           { headers: { Authorization: `Bearer ${token}` } }
@@ -58,9 +57,12 @@ const AgencyDashboard = () => {
   return (
     <div>
       <Navbar />
-      <Link to={`/profile/${localStorage.getItem("userId")}`} className="profile-link">
-  View Profile
-</Link>
+      <Link
+        to={`/profile/${localStorage.getItem("userId")}`}
+        className="profile-link"
+      >
+        View Profile
+      </Link>
       <div className="sidebar">
         <ul>
           <li>
@@ -69,13 +71,12 @@ const AgencyDashboard = () => {
           <li>
             <Link to="/agency/manage-freelancers">Manage Agency</Link>
           </li>{" "}
-          {/* ✅ New Option */}
-          <li>
+          {/* <li>
             <Link to="/agency/task-bidding">Task Bidding</Link>
           </li>
           <li>
             <Link to="/agency/task-assignment">Task Assignment</Link>
-          </li>
+          </li> */}
           <li>
             <Link to="/agency/manage-payments">Manage Payments</Link>
           </li>

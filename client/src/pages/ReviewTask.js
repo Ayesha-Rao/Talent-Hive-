@@ -1,4 +1,3 @@
-// export default ReviewTask;
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -18,7 +17,6 @@ const ReviewTask = () => {
     fetchPaymentStatus();
   }, [taskId]);
 
-  // ✅ Fetch Task Details
   const fetchTaskDetails = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -30,12 +28,11 @@ const ReviewTask = () => {
       setTask(response.data);
       setLoading(false);
     } catch (error) {
-      console.error("❌ Error fetching task details:", error);
+      console.error("Error fetching task details:", error);
       setLoading(false);
     }
   };
 
-  // ✅ Fetch Payment Status
   const fetchPaymentStatus = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -45,18 +42,17 @@ const ReviewTask = () => {
       );
 
       console.log("✅ Payment Status:", response.data.status);
-      setPaymentStatus(response.data.status); // ✅ Store payment status in state
+      setPaymentStatus(response.data.status);
     } catch (error) {
-      console.error("❌ Error fetching payment status:", error);
+      console.error("Error fetching payment status:", error);
     }
   };
 
-  // ✅ Approve Payment
   const approvePayment = async () => {
     try {
       setIsApproving(true);
       const token = localStorage.getItem("token");
-      console.log("🔍 Approving Payment for Task ID:", taskId);
+      console.log("Approving Payment for Task ID:", taskId);
 
       const response = await axios.post(
         "http://localhost:5000/api/payments/approve",
@@ -64,15 +60,14 @@ const ReviewTask = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("✅ Payment Approved Response:", response.data);
+      console.log("Payment Approved Response:", response.data);
       alert("Payment approved successfully!");
 
-      // ✅ Update status to "approved" after approval
       setPaymentStatus("approved");
       navigate("/client/dashboard"); // Redirect after approval
     } catch (error) {
       console.error(
-        "❌ Error approving payment:",
+        "Error approving payment:",
         error.response?.data || error.message
       );
       alert(
@@ -117,7 +112,7 @@ const ReviewTask = () => {
                 className="approve-btn"
                 disabled={
                   paymentStatus === "approved" || paymentStatus === "paid"
-                } // ✅ Disable button when status is "approved" or "paid"
+                } // Disable button when status is "approved" or "paid"
               >
                 {paymentStatus === "approved" || paymentStatus === "paid"
                   ? "Payment Approved"

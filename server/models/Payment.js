@@ -12,8 +12,8 @@ const PaymentSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    freelancerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // For Independent Freelancer
-    agencyOwnerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // For Agency Owner
+    freelancerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    agencyOwnerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     amount: { type: Number, required: true },
     commission: { type: Number, default: 0 }, // Agency Commission
     status: {
@@ -22,10 +22,7 @@ const PaymentSchema = new mongoose.Schema(
       default: "pending",
     },
 
-    // ✅ Tracks whether the agency owner has received payment from the client
-    // agencyOwnerPaid: { type: Boolean, default: false },
-
-    // ✅ List of freelancers paid (for agency freelancers)
+    // List of freelancers paid (for agency freelancers)
     freelancersPaid: [
       {
         freelancerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

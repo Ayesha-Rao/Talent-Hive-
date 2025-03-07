@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { fetchNotifications, markAllNotificationsAsRead } from "../services/notificationService";
+import {
+  fetchNotifications,
+  markAllNotificationsAsRead,
+} from "../services/notificationService";
 import Navbar from "../components/Navbar";
-// import "./NotificationsPage.css"; // Add CSS styles
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
@@ -16,32 +18,19 @@ const NotificationsPage = () => {
     getNotifications();
   }, []);
 
-//   const handleMarkAllAsRead = async () => {
-//     try {
-//         await markAllNotificationsAsRead();
-//         setNotifications((prev) =>
-//             prev.map((notification) => ({ ...notification, isRead: true }))
-//         );
-//         alert("✅ All notifications marked as read!");
-//     } catch (error) {
-//         alert("❌ Failed to mark notifications as read.");
-//     }
-// };
-const handleMarkAllAsRead = async () => {
+  const handleMarkAllAsRead = async () => {
     try {
-        await markAllNotificationsAsRead();
+      await markAllNotificationsAsRead();
 
-        // ✅ Update state: Hide all notifications
-        setNotifications([]);
+      setNotifications([]);
 
-        // ✅ Update the notification count to 0
-        setUnreadCount(0);
+      setUnreadCount(0);
 
-        alert("✅ All notifications marked as read!");
+      alert("All notifications marked as read!");
     } catch (error) {
-        alert("❌ Failed to mark notifications as read.");
+      alert("Failed to mark notifications as read.");
     }
-};
+  };
 
   return (
     <div>
@@ -53,7 +42,12 @@ const handleMarkAllAsRead = async () => {
           <p>No notifications yet.</p>
         ) : (
           notifications.map((notification) => (
-            <div key={notification._id} className={`notification-card ${notification.isRead ? "read" : "unread"}`}>
+            <div
+              key={notification._id}
+              className={`notification-card ${
+                notification.isRead ? "read" : "unread"
+              }`}
+            >
               <p>{notification.message}</p>
             </div>
           ))

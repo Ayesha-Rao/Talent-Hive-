@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts"; // Import recharts
-import "./ClientDashboard.css"; // Import the updated styles
+import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import "./ClientDashboard.css";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28"]; // Colors for pie chart
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
 
 const ClientDashboard = () => {
   const [tasks, setTasks] = useState([]);
@@ -33,7 +33,7 @@ const ClientDashboard = () => {
         ).length;
         setStats({ total, completed, open });
       } catch (error) {
-        console.error("❌ Error fetching client tasks:", error);
+        console.error("Error fetching client tasks:", error);
       }
     };
 
@@ -84,7 +84,6 @@ const ClientDashboard = () => {
           </div>
         </div>
 
-        {/* Post a Task Button */}
         <button
           className="post-task-btn"
           onClick={() => navigate("/post-task")}
@@ -92,7 +91,6 @@ const ClientDashboard = () => {
           Post a New Task
         </button>
 
-        {/* Task List Section */}
         <h3>My Tasks</h3>
         <div className="task-list">
           {tasks.length > 0 ? (

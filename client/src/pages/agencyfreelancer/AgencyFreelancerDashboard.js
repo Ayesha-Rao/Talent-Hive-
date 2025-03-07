@@ -1,13 +1,12 @@
-// export default AgencyFreelancerDashboard;
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
 
-import "./AgencyFreelancerDashboard.css"; // Ensure this CSS file exists
+import "./AgencyFreelancerDashboard.css";
 
-const COLORS = ["#0088FE", "#FFBB28", "#00C49F"]; // Chart Colors
+const COLORS = ["#0088FE", "#FFBB28", "#00C49F"];
 
 const AgencyFreelancerDashboard = () => {
   const [subtasks, setSubtasks] = useState([]);
@@ -22,7 +21,6 @@ const AgencyFreelancerDashboard = () => {
       try {
         const token = localStorage.getItem("token");
 
-        // ✅ Fetch only the subtasks assigned to the logged-in agency freelancer
         const response = await axios.get(
           "http://localhost:5000/api/subtasks/assigned/me",
           { headers: { Authorization: `Bearer ${token}` } }
@@ -30,7 +28,6 @@ const AgencyFreelancerDashboard = () => {
 
         setSubtasks(response.data);
 
-        // ✅ Calculate task stats
         const assigned = response.data.length;
         const inProgress = response.data.filter(
           (subtask) => subtask.status === "assigned"
@@ -54,14 +51,14 @@ const AgencyFreelancerDashboard = () => {
 
       await axios.post(
         "http://localhost:5000/api/subtasks/complete",
-        { subtaskId }, // Send subtask ID to mark it as completed
+        { subtaskId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      alert("✅ Subtask marked as completed!");
-      window.location.reload(); // Refresh to update status
+      alert("Subtask marked as completed!");
+      window.location.reload();
     } catch (error) {
-      alert("❌ Error completing subtask: " + error.response.data.message);
+      alert("Error completing subtask: " + error.response.data.message);
     }
   };
 
@@ -77,7 +74,6 @@ const AgencyFreelancerDashboard = () => {
       <div className="dashboard-container">
         <h2>Agency Freelancer Dashboard</h2>
 
-        {/* Stats & Chart */}
         <div className="stats-container">
           <div className="chart">
             <PieChart width={350} height={350}>
@@ -108,7 +104,6 @@ const AgencyFreelancerDashboard = () => {
           </div>
         </div>
 
-        {/* Subtask List */}
         <h3>Assigned Subtasks</h3>
         <div className="task-list">
           {subtasks.length > 0 ? (

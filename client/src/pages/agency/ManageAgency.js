@@ -17,7 +17,6 @@ const ManageAgency = () => {
     fetchFreelancers();
   }, []);
 
-  // ✅ Fetch Agency Freelancers
   const fetchFreelancers = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -33,7 +32,6 @@ const ManageAgency = () => {
     }
   };
 
-  // ✅ Add Freelancer to Agency
   const handleAddFreelancer = async (e) => {
     e.preventDefault();
     try {
@@ -48,14 +46,13 @@ const ManageAgency = () => {
 
       alert("Freelancer added successfully!");
       setShowForm(false);
-      fetchFreelancers(); // Refresh list
+      fetchFreelancers();
       setNewFreelancer({ name: "", email: "", password: "", skills: "" });
     } catch (error) {
       alert("Error adding freelancer: " + error.response.data.message);
     }
   };
 
-  // ✅ Remove Freelancer
   const handleRemoveFreelancer = async (id) => {
     if (!window.confirm("Are you sure you want to remove this freelancer?"))
       return;
@@ -70,7 +67,7 @@ const ManageAgency = () => {
       );
 
       alert("Freelancer removed successfully!");
-      fetchFreelancers(); // Refresh list
+      fetchFreelancers();
     } catch (error) {
       alert("Error removing freelancer: " + error.response.data.message);
     }
@@ -82,7 +79,6 @@ const ManageAgency = () => {
       <div className="manage-agency-container">
         <h2>Manage Agency Freelancers</h2>
 
-        {/* Add Freelancer Button */}
         <button
           className="add-freelancer-btn"
           onClick={() => setShowForm(!showForm)}
@@ -90,7 +86,6 @@ const ManageAgency = () => {
           {showForm ? "Close Form" : "Add Freelancer"}
         </button>
 
-        {/* Add Freelancer Form */}
         {showForm && (
           <form className="freelancer-form" onSubmit={handleAddFreelancer}>
             <input
@@ -133,7 +128,6 @@ const ManageAgency = () => {
           </form>
         )}
 
-        {/* List of Agency Freelancers */}
         <h3>Current Freelancers</h3>
         <div className="freelancer-list">
           {freelancers.length > 0 ? (

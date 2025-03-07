@@ -19,9 +19,9 @@ router.get("/test", (req, res) => {
   console.log("🔍 Test Route Hit!");
   res.json({ message: "Task API is working!" });
 });
-// ✅ Clients can view their own tasks
+
 router.get("/my-tasks", protect, authorizeRoles("client"), getClientTasks);
-// ✅ Freelancers can view available tasks
+
 router.get(
   "/open",
   protect,
@@ -35,26 +35,7 @@ router.get(
   authorizeRoles("independentFreelancer", "agencyFreelancer", "agencyOwner"),
   getAssignedTasks
 );
-// router.get(
-//   "/assigned",
-//   protect,
-//   authorizeRoles("independentFreelancer", "agencyFreelancer", "agencyOwner"),
-//   async (req, res) => {
-//     try {
-//       const tasks = await Task.find({ assignedTo: req.user.id });
 
-//       if (!tasks.length) {
-//         return res.status(200).json([]); // Return empty array instead of 404
-//       }
-
-//       res.status(200).json(tasks);
-//     } catch (error) {
-//       res.status(500).json({ message: "Server error", error: error.message });
-//     }
-//   }
-// );
-
-// ✅ Get Completed Tasks for the Logged-in Freelancer/Agency Freelancer
 router.get(
   "/completed",
   protect,
@@ -66,9 +47,9 @@ router.get(
   ),
   getCompletedTasks
 );
-// ✅ Get Task Details by ID (Clients, Freelancers, Agency Owners)
+
 router.get("/:taskId", protect, getTaskById);
-// ✅ Only "freelancers" and "agency owners" can bid on tasks
+
 router.post(
   "/bid",
   protect,
@@ -78,10 +59,7 @@ router.post(
   }
 );
 
-// ✅ Only "client" role can create tasks
 router.post("/", protect, authorizeRoles("client"), createTask);
-
-// ✅ Agency Owners can assign tasks to freelancers
 
 router.post(
   "/assign",
@@ -90,13 +68,11 @@ router.post(
   assignTask
 );
 
-// ✅ Freelancers can mark a task as completed
 router.post(
   "/complete",
   protect,
   authorizeRoles("independentFreelancer", "agencyFreelancer", "agencyOwner"),
   completeTask
 );
-// ✅ Freelancers can view their assigned tasks
 
 module.exports = router;

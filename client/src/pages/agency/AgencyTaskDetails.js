@@ -5,7 +5,7 @@ import Navbar from "../../components/Navbar";
 import "./AgencyTaskDetails.css";
 
 const AgencyTaskDetails = () => {
-  const { taskId } = useParams(); // Get Task ID from URL
+  const { taskId } = useParams();
   const navigate = useNavigate();
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,7 +24,7 @@ const AgencyTaskDetails = () => {
         setTask(response.data);
         setLoading(false);
       } catch (error) {
-        console.error("❌ Error fetching task details:", error);
+        console.error("Error fetching task details:", error);
         setLoading(false);
       }
     };
@@ -44,7 +44,7 @@ const AgencyTaskDetails = () => {
       alert("Task marked as completed!");
       navigate("/freelancer/dashboard"); // Redirect back to dashboard
     } catch (error) {
-      console.error("❌ Error marking task complete:", error);
+      console.error("Error marking task complete:", error);
       alert("Error marking task as complete: " + error.response?.data?.message);
     }
   };

@@ -20,7 +20,10 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/register", formData);
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        formData
+      );
       alert("Signup successful! Please login.");
       navigate("/login");
     } catch (error) {
@@ -28,47 +31,50 @@ const Signup = () => {
     }
   };
 
-//   return (
-//     <div>
-//       <h2>Sign Up</h2>
-//       <form onSubmit={handleSubmit}>
-//         <input type="text" name="name" placeholder="Name" onChange={handleChange} required />
-//         <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-//         <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
-
-//         <select name="role" onChange={handleChange} required>
-//           <option value="">Select Role</option>
-//           <option value="client">Client</option>
-//           <option value="independentFreelancer">Independent Freelancer</option>
-//           <option value="agencyOwner">Agency Owner</option>
-//         </select>
-
-//         {formData.role === "agencyOwner" && (
-//           <input type="text" name="agencyName" placeholder="Agency Name" onChange={handleChange} required />
-//         )}
-
-//         <button type="submit">Sign Up</button>
-//       </form>
-//     </div>
-//   );
-return (
+  return (
     <div className="signup-container">
       <div className="signup-box">
         <h2>Sign Up</h2>
         <form onSubmit={handleSubmit}>
-          <input type="text" name="name" placeholder="Name" onChange={handleChange} required />
-          <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-          <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
+          <input
+            type="text"
+            name="name"
+            placeholder="Name"
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            onChange={handleChange}
+            required
+          />
 
           <select name="role" onChange={handleChange} required>
             <option value="">Select Role</option>
             <option value="client">Client</option>
-            <option value="independentFreelancer">Independent Freelancer</option>
+            <option value="independentFreelancer">
+              Independent Freelancer
+            </option>
             <option value="agencyOwner">Agency Owner</option>
           </select>
 
           {formData.role === "agencyOwner" && (
-            <input type="text" name="agencyName" placeholder="Agency Name" onChange={handleChange} required />
+            <input
+              type="text"
+              name="agencyName"
+              placeholder="Agency Name"
+              onChange={handleChange}
+              required
+            />
           )}
 
           <button type="submit">Sign Up</button>

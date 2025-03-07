@@ -9,7 +9,7 @@ const {
 
 const router = express.Router();
 
-// ✅ Submit a Review (Only Clients Can Review Freelancers)
+// Submit a Review (Only Clients Can Review Freelancers)
 router.post(
   "/submit",
   protect,
@@ -22,10 +22,10 @@ router.post(
   submitReview
 );
 
-// ✅ Get All Reviews for a User
+// Get All Reviews for a User
 router.get("/:userId", protect, getUserReviews);
 
-// ✅ Get Average Rating for a User
+// Get Average Rating for a User
 router.get("/:userId/average", protect, getAverageRating);
 
 module.exports = router;

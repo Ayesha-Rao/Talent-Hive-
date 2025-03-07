@@ -1,4 +1,4 @@
-// authService.js - Handles authentication and token management
+//Handles authentication and token management
 
 export const isAuthenticated = () => {
   return localStorage.getItem("token") !== null;
@@ -8,15 +8,14 @@ export const getUserRole = () => {
   return localStorage.getItem("role");
 };
 
-// ✅ Get user details including ID
+// Get user details including ID
 export const getUser = () => {
-  return JSON.parse(localStorage.getItem("user")); // Parse JSON
+  return JSON.parse(localStorage.getItem("user"));
 };
 
-// ✅ Logout function to clear user data and redirect
 export const logout = (navigate) => {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
-  localStorage.removeItem("user"); // ✅ Remove user data on logout
-  navigate("/login"); // ✅ Redirect to Login Page
+  localStorage.removeItem("user");
+  navigate("/login");
 };

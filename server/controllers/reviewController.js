@@ -7,7 +7,7 @@ const submitReview = async (req, res) => {
   try {
     const { recipientId, taskId, rating, comment } = req.body;
 
-    // ✅ Ensure only completed tasks/subtasks can be reviewed
+    //completed tasks here or subtasks
     const task = await Task.findById(taskId);
     const subtask = await Subtask.findOne({ taskId, assignedTo: req.user.id });
 
@@ -26,12 +26,10 @@ const submitReview = async (req, res) => {
         .json({ message: "You can only review completed subtasks." });
     }
 
-    // ✅ Ensure the reviewer is authorized
-    const reviewerRole = req.user.role;
+    const reviewerRole = req.user.role; //auth
     let validReview = false;
 
     if (reviewerRole === "client") {
-      // ✅ Clients can review Freelancers & Agency Owners
       if (
         task.assignedTo?.toString() === recipientId || // Independent Freelancer
         task.agencyOwnerId?.toString() === recipientId // Agency Owner
@@ -39,30 +37,26 @@ const submitReview = async (req, res) => {
         validReview = true;
       }
     } else if (reviewerRole === "independentFreelancer") {
-      // ✅ Independent Freelancer can review Clients
       if (task.clientId.toString() === recipientId) {
         validReview = true;
       }
     } else if (reviewerRole === "agencyOwner") {
-      // ✅ Agency Owners can review Agency Freelancers
-
+      //review client
       if (task.clientId.toString() === recipientId) {
         validReview = true;
       }
     } else if (reviewerRole === "agencyOwner") {
-      // ✅ Agency Owners can review Agency Freelancers
       if (subtask && subtask.assignedTo.toString() === recipientId) {
         validReview = true;
       }
     } else if (reviewerRole === "agencyFreelancer") {
-      // ✅ Agency Freelancers can review Agency Owners (based on agencyId field)
       const reviewer = await User.findById(req.user.id);
       if (reviewer.agencyId?.toString() === recipientId) {
         validReview = true;
       }
     }
 
-    console.log("✅ Valid Review Check:", validReview);
+    console.log("Valid Review Check:", validReview);
 
     if (!validReview) {
       return res
@@ -70,7 +64,6 @@ const submitReview = async (req, res) => {
         .json({ message: "You are not allowed to review this user." });
     }
 
-    // ✅ Check if a review already exists for this task/subtask
     const existingReview = await Review.findOne({
       taskId,
       recipientId,
@@ -82,7 +75,6 @@ const submitReview = async (req, res) => {
       });
     }
 
-    // ✅ Create and save review
     const review = new Review({
       reviewerId: req.user.id,
       recipientId,
@@ -94,20 +86,19 @@ const submitReview = async (req, res) => {
     await review.save();
     res.status(201).json({ message: "Review submitted successfully", review });
   } catch (error) {
-    console.error("❌ Error Submitting Review:", error);
+    console.error("Error Submitting Review:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// ✅ Get Reviews for a Specific User (Including Reviewer & Task Details)
 const getUserReviews = async (req, res) => {
   try {
     const { userId } = req.params;
     console.log("🔍 Fetching Reviews for User:", userId);
 
     const reviews = await Review.find({ recipientId: userId })
-      .populate("reviewerId", "name email") // ✅ Fetch the person who gave the review
-      .populate("taskId", "title"); // ✅ Fetch the task title
+      .populate("reviewerId", "name email")
+      .populate("taskId", "title");
 
     res.status(200).json(reviews);
   } catch (error) {
@@ -116,7 +107,6 @@ const getUserReviews = async (req, res) => {
   }
 };
 
-// ✅ Get Average Rating for a User
 const getAverageRating = async (req, res) => {
   try {
     const { userId } = req.params;

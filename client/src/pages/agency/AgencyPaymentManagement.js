@@ -1,4 +1,3 @@
-// export default AgencyPaymentManagement;
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../style.css";
@@ -69,25 +68,24 @@ const AgencyPaymentManagement = () => {
 
   const handlePaymentRelease = async (taskId) => {
     try {
-      console.log("🔍 Searching Payment ID for Task:", taskId);
+      console.log("Searching Payment ID for Task:", taskId);
 
       const paymentRecord = payments.find(
         (payment) => payment.taskId === taskId
       );
       if (!paymentRecord) {
-        console.error("❌ No payment record found for this task.");
+        console.error("No payment record found for this task.");
         setMessage("No payment record found for this task.");
         return;
       }
 
       const paymentId = paymentRecord.paymentId;
-      console.log("✅ Matched Payment ID:", paymentId);
+      console.log("Matched Payment ID:", paymentId);
 
       setLoading(true);
       setMessage("");
       const token = localStorage.getItem("token");
 
-      // ✅ Disable button immediately in the UI before API call completes
       setPayments((prevPayments) =>
         prevPayments.map((p) =>
           p.taskId === taskId ? { ...p, status: "paid" } : p
@@ -101,9 +99,9 @@ const AgencyPaymentManagement = () => {
       );
 
       setMessage("Payment successfully released to freelancers!");
-      await fetchPayments(); // ✅ Refresh payments to keep state correct after API response
+      await fetchPayments();
     } catch (error) {
-      console.error("❌ Error releasing payment:", error);
+      console.error("Error releasing payment:", error);
       setMessage("Failed to release payment.");
     } finally {
       setLoading(false);
@@ -129,7 +127,7 @@ const AgencyPaymentManagement = () => {
           {tasksWithPayments.map((task) => {
             const commissionAmount = task.paymentReceived * 0.05;
             const finalPayment = task.paymentReceived - commissionAmount;
-            // ✅ Get freelancer names or "None worked..."
+
             const assignedFreelancers =
               subtasks[task._id]?.map((s) => s.assignedTo?.name) || [];
             const freelancerNames =
@@ -137,7 +135,6 @@ const AgencyPaymentManagement = () => {
                 ? assignedFreelancers.join(", ")
                 : "None worked...";
 
-            // ✅ Condition to disable/hide button
             const noFreelancersWorked = freelancerNames === "None worked...";
 
             return (
@@ -175,13 +172,6 @@ const AgencyPaymentManagement = () => {
                 </td>
                 <td>{task.paymentStatus}</td>
                 <td>
-                  {/* <button
-                    onClick={() => handlePaymentRelease(task._id)}
-                    disabled={loading || task.isPaid}
-                  >
-                    {task.isPaid ? "Paid" : "Deduct & Pay"}
-                  </button> */}
-                  {/* ✅ Hide button if no freelancers worked */}
                   {!noFreelancersWorked && (
                     <button
                       onClick={() => handlePaymentRelease(task._id)}

@@ -40,20 +40,20 @@ const AgencyTaskBidding = () => {
       const token = localStorage.getItem("token");
 
       // Log the request payload
-      console.log("🔍 Sending Bid Data:", { taskId, amount: bidAmount });
+      console.log("Sending Bid Data:", { taskId, amount: bidAmount });
 
       const response = await axios.post(
-        "http://localhost:5000/api/bids", // ✅ Correct endpoint for bid placement
-        { taskId, amount: parseInt(bidAmount, 10) }, // Convert bidAmount to number
+        "http://localhost:5000/api/bids",
+        { taskId, amount: parseInt(bidAmount, 10) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("✅ Bid Response:", response.data);
+      console.log("Bid Response:", response.data);
       alert("Bid placed successfully!");
-      navigate("/freelancer/dashboard"); // Redirect after bidding
+      navigate("/freelancer/dashboard");
     } catch (error) {
       console.error(
-        "❌ Error placing bid:",
+        "Error placing bid:",
         error.response?.data || error.message
       );
       alert(

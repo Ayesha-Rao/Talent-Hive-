@@ -32,6 +32,7 @@ function App() {
       <Routes>
         {/* Landing Page (Entry Point) */}
         <Route path="/" element={<Home />} />
+
         {/* Public Routes */}
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
@@ -86,7 +87,6 @@ function App() {
           <Route path="/profile/:userId" element={<ProfilePage />} />
           <Route path="/submit-review" element={<SubmitReview />} />
           <Route path="/reviews" element={<ReviewsPage />} />{" "}
-          {/* ✅ New Route */};
         </Route>
       </Routes>
     </Router>

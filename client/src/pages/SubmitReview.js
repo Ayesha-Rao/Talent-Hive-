@@ -28,17 +28,15 @@ const SubmitReview = () => {
       const userRole = localStorage.getItem("role");
 
       if (userRole === "agencyFreelancer") {
-        // ✅ Only change the display for agency freelancers
         setCompletedTasks(
           response.data.map((subtask) => ({
             _id: subtask._id,
-            title: subtask.description || "Subtask", // ✅ Show subtask description
-            taskId: subtask.taskId?._id || "", // ✅ Store parent taskId for recipient logic
+            title: subtask.description || "Subtask",
+            taskId: subtask.taskId?._id || "", // parent taskId for recipient logic
             agencyId: subtask.assignedTo?.agencyId || "",
           }))
         );
       } else {
-        // ✅ Keep existing functionality for other roles
         setCompletedTasks(response.data);
       }
     } catch (error) {
@@ -56,13 +54,13 @@ const SubmitReview = () => {
 
       let recipient = "";
       if (userRole === "client") {
-        recipient = task.assignedTo?._id || ""; // Client reviews freelancer
+        recipient = task.assignedTo?._id || "";
       } else if (userRole === "independentFreelancer") {
-        recipient = task.clientId?._id || ""; // Freelancer reviews client
+        recipient = task.clientId?._id || "";
       } else if (userRole === "agencyFreelancer") {
-        recipient = task.agencyId || ""; // Agency Freelancer reviews Agency Owner
+        recipient = task.agencyId || "";
       } else if (userRole === "agencyOwner") {
-        recipient = task.clientId?._id || ""; // ✅ FIXED: Agency Owner reviews Client
+        recipient = task.clientId?._id || "";
       }
 
       setRecipientId(recipient);
@@ -78,7 +76,7 @@ const SubmitReview = () => {
       return;
     }
 
-    console.log("🚀 Submitting Review:", {
+    console.log("Submitting Review:", {
       recipientId,
       taskId: selectedTask,
       rating,
@@ -103,8 +101,8 @@ const SubmitReview = () => {
       setSelectedTask("");
       setRecipientId("");
     } catch (error) {
-      console.error("❌ Error submitting review:", error);
-      console.log("🔍 API Error Response:", error.response?.data);
+      console.error("Error submitting review:", error);
+      console.log("API Error Response:", error.response?.data);
       setMessage(error.response?.data?.message || "Failed to submit review.");
     } finally {
       setLoading(false);
@@ -132,7 +130,6 @@ const SubmitReview = () => {
           ))}
         </select>
 
-        {/* Rating Selection */}
         <label>Rating:</label>
         <select value={rating} onChange={(e) => setRating(e.target.value)}>
           <option value="">Select rating</option>
@@ -142,8 +139,6 @@ const SubmitReview = () => {
             </option>
           ))}
         </select>
-
-        {/* Comment Input */}
         <label>Comment:</label>
         <textarea
           value={comment}
@@ -151,7 +146,6 @@ const SubmitReview = () => {
           placeholder="Write your review..."
         ></textarea>
 
-        {/* Submit Button */}
         <button type="submit" disabled={loading}>
           {loading ? "Submitting..." : "Submit Review"}
         </button>
