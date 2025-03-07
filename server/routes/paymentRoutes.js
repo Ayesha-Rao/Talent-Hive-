@@ -1,4 +1,6 @@
 const express = require("express");
+const Payment = require("../models/Payment");
+const Task = require("../models/Task");
 const { protect } = require("../middleware/authMiddleware");
 const { authorizeRoles } = require("../middleware/roleMiddleware");
 const {
@@ -7,6 +9,7 @@ const {
   approvePayment,
   releasePayment,
   getFreelancerPayments,
+  getPaymentStatus,
 } = require("../controllers/paymentController");
 
 const router = express.Router();
@@ -29,5 +32,8 @@ router.get(
 router.get("/:taskId", protect, getPaymentDetails);
 // ✅ Get Payment History for a Specific Freelancer
 // router.get("/freelancer/:freelancerId", protect, getFreelancerPayments);
+// ✅ Backend Route to Get Payment Status
+
+router.get("/status/:taskId", getPaymentStatus);
 
 module.exports = router;

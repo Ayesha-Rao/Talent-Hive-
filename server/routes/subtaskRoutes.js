@@ -1,21 +1,3 @@
-// const express = require("express");
-// const { protect } = require("../middleware/authMiddleware");
-// const { authorizeRoles } = require("../middleware/roleMiddleware");
-// const { createSubtask, getSubtasksByTask, completeSubtask } = require("../controllers/subtaskController");
-
-// const router = express.Router();
-
-// // ✅ Agency Owners can create subtasks
-// router.post("/", protect, authorizeRoles("agencyOwner"), createSubtask);
-
-// router.post("/assign", protect, authorizeRoles("agencyOwner"), assignSubtask);
-
-// // ✅ Agency Owners & Assigned Freelancers can view subtasks of a main task
-// router.get("/:taskId", protect, getSubtasksByTask);
-
-// // ✅ Assigned Freelancer can mark a subtask as completed
-// router.post("/complete", protect, authorizeRoles("agencyFreelancer"), completeSubtask);
-
 // module.exports = router;
 const express = require("express");
 const { protect } = require("../middleware/authMiddleware");
@@ -26,6 +8,7 @@ const {
   getSubtasksByTask,
   completeSubtask,
   assignSubtask,
+  getAssignedSubtasks,
 } = require("../controllers/subtaskController");
 
 const router = express.Router();
@@ -43,7 +26,7 @@ router.get("/:taskId", protect, getSubtasksByTask);
 router.post(
   "/complete",
   protect,
-  authorizeRoles("agencyFreelancer"),
+  authorizeRoles("agencyFreelancer", "agencyOwner"),
   completeSubtask
 );
 // ✅ Get all subtasks assigned to the logged-in agency freelancer
@@ -51,24 +34,7 @@ router.get(
   "/assigned/me",
   protect,
   authorizeRoles("agencyFreelancer"),
-  async (req, res) => {
-    try {
-      console.log("🔍 Fetching Assigned Subtasks for Freelancer:", req.user.id);
-
-      const assignedSubtasks = await Subtask.find({ assignedTo: req.user.id });
-
-      if (assignedSubtasks.length === 0) {
-        return res
-          .status(404)
-          .json({ message: "No subtasks assigned to you." });
-      }
-
-      res.status(200).json(assignedSubtasks);
-    } catch (error) {
-      console.error("❌ Error Fetching Assigned Subtasks:", error);
-      res.status(500).json({ message: "Server error", error: error.message });
-    }
-  }
+  getAssignedSubtasks
 );
 
 module.exports = router;

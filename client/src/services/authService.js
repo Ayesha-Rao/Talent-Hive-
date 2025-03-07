@@ -13,12 +13,6 @@ export const getUser = () => {
   return JSON.parse(localStorage.getItem("user")); // Parse JSON
 };
 
-// export const logout = () => {
-//   localStorage.removeItem("token");
-//   localStorage.removeItem("role");
-//   localStorage.removeItem("user"); // ✅ Remove user data on logout
-// };
-
 // ✅ Logout function to clear user data and redirect
 export const logout = (navigate) => {
   localStorage.removeItem("token");

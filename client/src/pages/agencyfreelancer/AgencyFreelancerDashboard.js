@@ -111,34 +111,6 @@ const AgencyFreelancerDashboard = () => {
         {/* Subtask List */}
         <h3>Assigned Subtasks</h3>
         <div className="task-list">
-          {/* {subtasks.length > 0 ? (
-            subtasks.map((subtask) => (
-              <div key={subtask._id} className="task-card">
-                <h4>{subtask.description}</h4>
-                <p>
-                  Status:{" "}
-                  <span className={`status ${subtask.status.toLowerCase()}`}>
-                    {subtask.status}
-                  </span>
-                </p>
-                <p>
-                  Deadline: {new Date(subtask.deadline).toLocaleDateString()}
-                </p>
-
-                {subtask.status !== "completed" && (
-                  <button
-                    className="complete-btn"
-                    onClick={() => handleCompleteSubtask(subtask._id)}
-                  >
-                    ✅ Mark as Complete
-                  </button>
-                )}
-              </div>
-            ))
-          ) : (
-            <p className="no-tasks">No subtasks assigned.</p>
-          )} */}
-
           {subtasks.length > 0 ? (
             subtasks.map((subtask) => (
               <div key={subtask._id} className="task-card">

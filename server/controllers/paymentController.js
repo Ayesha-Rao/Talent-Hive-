@@ -262,6 +262,9 @@ const releasePayment = async (req, res) => {
 
     console.log("✅ Freelancers Assigned to Subtasks:", freelancerIds);
 
+    if (payment.commission > 0) {
+      return res.status(400).json({ message: "Commission already deducted." });
+    }
     // ✅ Deduct Agency Commission
     const agencyCommission = payment.amount * 0.05;
     const totalAfterCommission = payment.amount - agencyCommission;
@@ -398,10 +401,27 @@ const getFreelancerPayments = async (req, res) => {
   }
 };
 
+// ✅ Function to fetch payment status
+const getPaymentStatus = async (req, res) => {
+  try {
+    const payment = await Payment.findOne({ taskId: req.params.taskId });
+
+    if (!payment) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
+
+    res.json({ status: payment.status });
+  } catch (error) {
+    console.error("❌ Error fetching payment status:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   processPayment,
   getPaymentDetails,
   approvePayment,
   releasePayment,
   getFreelancerPayments,
+  getPaymentStatus,
 };

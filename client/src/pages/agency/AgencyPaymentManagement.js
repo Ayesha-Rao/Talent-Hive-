@@ -1,3 +1,4 @@
+// export default AgencyPaymentManagement;
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../style.css";
@@ -5,7 +6,7 @@ import "../style.css";
 const AgencyPaymentManagement = () => {
   const [completedTasks, setCompletedTasks] = useState([]);
   const [payments, setPayments] = useState([]);
-  const [subtasks, setSubtasks] = useState({}); // Store subtasks separately
+  const [subtasks, setSubtasks] = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -14,19 +15,14 @@ const AgencyPaymentManagement = () => {
     fetchPayments();
   }, []);
 
-  // Fetch completed tasks assigned to the agency owner
   const fetchCompletedTasks = async () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
         "http://localhost:5000/api/tasks/completed",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setCompletedTasks(response.data);
-
-      // Fetch subtasks for each completed task
       response.data.forEach((task) => fetchSubtasks(task._id));
     } catch (error) {
       console.error("Error fetching completed tasks:", error);
@@ -34,15 +30,12 @@ const AgencyPaymentManagement = () => {
     }
   };
 
-  // Fetch payment details
   const fetchPayments = async () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
         "http://localhost:5000/api/payments/freelancer",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setPayments(response.data.payments);
     } catch (error) {
@@ -51,15 +44,12 @@ const AgencyPaymentManagement = () => {
     }
   };
 
-  // Fetch subtasks for a given task
   const fetchSubtasks = async (taskId) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
         `http://localhost:5000/api/subtasks/${taskId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setSubtasks((prev) => ({ ...prev, [taskId]: response.data }));
     } catch (error) {
@@ -67,13 +57,13 @@ const AgencyPaymentManagement = () => {
     }
   };
 
-  // Merge Payment Data into Tasks
   const tasksWithPayments = completedTasks.map((task) => {
     const payment = payments.find((p) => p.taskId === task._id);
     return {
       ...task,
       paymentReceived: payment ? payment.amountPaid : 0,
       paymentStatus: payment ? payment.status : "pending",
+      isPaid: payment ? payment.status === "paid" : false,
     };
   });
 
@@ -81,43 +71,37 @@ const AgencyPaymentManagement = () => {
     try {
       console.log("🔍 Searching Payment ID for Task:", taskId);
 
-      // ✅ Ensure payments data is available before searching
-      if (!payments || payments.length === 0) {
-        console.error("❌ No payment records available.");
-        setMessage("No payment records available.");
-        return;
-      }
-
-      console.log("🔍 Available Payments:", payments);
-
-      // ✅ Find the correct `paymentId` for the given `taskId`
       const paymentRecord = payments.find(
         (payment) => payment.taskId === taskId
       );
-
       if (!paymentRecord) {
         console.error("❌ No payment record found for this task.");
         setMessage("No payment record found for this task.");
         return;
       }
 
-      const paymentId = paymentRecord.paymentId; // ✅ Extract paymentId
+      const paymentId = paymentRecord.paymentId;
       console.log("✅ Matched Payment ID:", paymentId);
 
       setLoading(true);
       setMessage("");
       const token = localStorage.getItem("token");
 
-      // ✅ Now send the correct `paymentId` to release payment
+      // ✅ Disable button immediately in the UI before API call completes
+      setPayments((prevPayments) =>
+        prevPayments.map((p) =>
+          p.taskId === taskId ? { ...p, status: "paid" } : p
+        )
+      );
+
       await axios.post(
         "http://localhost:5000/api/payments/release",
-        { paymentId }, // ✅ Send paymentId instead of taskId
+        { paymentId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setMessage("Payment successfully released to freelancers!");
-      fetchCompletedTasks();
-      fetchPayments(); // Refresh data
+      await fetchPayments(); // ✅ Refresh payments to keep state correct after API response
     } catch (error) {
       console.error("❌ Error releasing payment:", error);
       setMessage("Failed to release payment.");
@@ -142,60 +126,74 @@ const AgencyPaymentManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {tasksWithPayments.length === 0 ? (
-            <tr>
-              <td colSpan="5">No completed tasks found.</td>
-            </tr>
-          ) : (
-            tasksWithPayments.map((task) => (
+          {tasksWithPayments.map((task) => {
+            const commissionAmount = task.paymentReceived * 0.05;
+            const finalPayment = task.paymentReceived - commissionAmount;
+            // ✅ Get freelancer names or "None worked..."
+            const assignedFreelancers =
+              subtasks[task._id]?.map((s) => s.assignedTo?.name) || [];
+            const freelancerNames =
+              assignedFreelancers.length > 0
+                ? assignedFreelancers.join(", ")
+                : "None worked...";
+
+            // ✅ Condition to disable/hide button
+            const noFreelancersWorked = freelancerNames === "None worked...";
+
+            return (
               <tr key={task._id}>
                 <td>{task.title}</td>
                 <td>
-                  {subtasks[task._id]?.map((subtask) => (
-                    <span key={subtask._id}>{subtask.assignedTo?.name} </span>
-                  )) || "Fetching..."}
+                  {subtasks[task._id]
+                    ?.map((s) => s.assignedTo?.name)
+                    .join(", ") || "None worked..."}
                 </td>
-                {/* <td>${task.paymentReceived || 0}</td> */}
                 <td>
                   <p>
-                    <strong>Total:</strong> ${task.paymentReceived || 0}
+                    <strong>Total:</strong> ${task.paymentReceived}
                   </p>
-                  <p className="commission-info">
-                    <strong>Commission (5%):</strong>
-                    <span className="commission-amount">
-                      {" "}
-                      -${(task.paymentReceived * 0.05).toFixed(2)}
-                    </span>
-                    <span className="tooltip">
-                      ⓘ
-                      <span className="tooltip-text">
-                        Agency deducts 5% commission from total payment.
-                      </span>
-                    </span>
-                  </p>
-                  <p>
-                    <strong>Final Payment:</strong> $
-                    {(task.paymentReceived * 0.95).toFixed(2)}
-                  </p>
-                </td>
 
+                  {task.isPaid ? (
+                    <>
+                      <p className="commission-info">
+                        <strong>Commission Deducted (5%):</strong>
+                        <span className="commission-amount">
+                          {" "}
+                          -${commissionAmount.toFixed(2)}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>Final Payment:</strong> $
+                        {finalPayment.toFixed(2)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="commission-info">
+                      <strong>Commission (5%):</strong> Pending Deduction
+                    </p>
+                  )}
+                </td>
                 <td>{task.paymentStatus}</td>
                 <td>
-                  {task.paymentStatus === "Paid" ? (
-                    <button disabled>Paid</button>
-                  ) : (
+                  {/* <button
+                    onClick={() => handlePaymentRelease(task._id)}
+                    disabled={loading || task.isPaid}
+                  >
+                    {task.isPaid ? "Paid" : "Deduct & Pay"}
+                  </button> */}
+                  {/* ✅ Hide button if no freelancers worked */}
+                  {!noFreelancersWorked && (
                     <button
                       onClick={() => handlePaymentRelease(task._id)}
-                      disabled={loading}
+                      disabled={loading || task.isPaid}
                     >
-                      Deduct Commision & pay freelancers
-                      {/* {loading ? "Processing..." : "Pay Freelancers"} */}
+                      {task.isPaid ? "Paid" : "Deduct & Pay"}
                     </button>
                   )}
                 </td>
               </tr>
-            ))
-          )}
+            );
+          })}
         </tbody>
       </table>
     </div>
